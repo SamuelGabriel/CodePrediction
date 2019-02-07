@@ -1,0 +1,5 @@
+dpu-utils
+more_itertools
+docopt
+typing
+protobuf==3.6.0

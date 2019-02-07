@@ -1,0 +1,82 @@
+//
+// Copyright © 2018 Andrew Rice (acr31@cam.ac.uk)
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+syntax = "proto2";
+
+package protobuf;
+
+option java_package = "uk.ac.cam.acr31.features.javac.proto";
+option java_outer_classname = "GraphProtos";
+
+message FeatureNode {
+
+    enum NodeType {
+        TOKEN = 1;
+        AST_ELEMENT = 2;
+        COMMENT_LINE = 3;
+        COMMENT_BLOCK = 4;
+        COMMENT_JAVADOC = 5;
+        // removed - AST_ROOT = 6;
+        IDENTIFIER_TOKEN = 7;
+        FAKE_AST = 8;
+        SYMBOL = 9;
+        SYMBOL_TYP = 10;
+        SYMBOL_VAR = 11;
+        SYMBOL_MTH = 12;
+    }
+
+    optional int64 id = 1;
+    optional NodeType type = 2;
+    optional string contents = 3;
+    optional int32 startPosition = 4;
+    optional int32 endPosition = 5;
+    optional int32 startLineNumber = 6;
+    optional int32 endLineNumber = 7;
+}
+
+message FeatureEdge {
+
+    enum EdgeType {
+        ASSOCIATED_TOKEN = 1;
+        NEXT_TOKEN = 2;
+        AST_CHILD = 3;
+        NONE = 4;
+        LAST_WRITE = 5;
+        LAST_USE = 6;
+        COMPUTED_FROM = 7;
+        RETURNS_TO = 8;
+        FORMAL_ARG_NAME = 9;
+        GUARDED_BY = 10;
+        GUARDED_BY_NEGATION = 11;
+        LAST_LEXICAL_USE = 12;
+        COMMENT = 13;
+        ASSOCIATED_SYMBOL = 14;
+    }
+
+    optional int64 sourceId = 1;
+    optional int64 destinationId = 2;
+    optional EdgeType type = 3;
+}
+
+message Graph {
+
+    repeated FeatureNode node = 1;
+    repeated FeatureEdge edge = 2;
+    optional string sourceFile = 3;
+    optional FeatureNode first_token = 4;
+    optional FeatureNode ast_root = 5;
+}
+
