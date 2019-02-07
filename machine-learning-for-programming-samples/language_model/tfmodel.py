@@ -188,9 +188,12 @@ class AttentionModel(BasicModel):
             attn_ids = tf.reshape(tf.cast(attn_ids, tf.int64), [-1, 1], name="att_id_reshape")
             initial_indices = tf.expand_dims(tfutils.tile_vector(tf.cast(tf.range(batch_size), tf.int64), length), 1,
                                              name="att_indices_expand")
+            # (length*batch_size,1), with [[0][0][0][0][0][1][1][1][1][1]...]
             sp_indices = tf.concat(axis=1, values=[initial_indices, attn_ids], name="att_indices_concat")
+            # (length*batch_size,2), with [[0,aid1][0,aid2]...]
             attention_probs = tf.sparse_to_dense(sp_indices, [batch_size, project_to], alpha, validate_indices=False,
                                                  name="att_sparse_to_dense")
+            # maps the pointers in sp_indices to a matrix of [batch_size,project_to] based on the alpha values
             return attention_probs
 
         def weighted_average(inputs, weights):
@@ -253,8 +256,8 @@ class AttentionOverOutputModel(AttentionModel):
     and half considered the input to the attention mechanism
     """
 
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate):
-        super(AttentionOverOutputModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
+        super(AttentionOverOutputModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
         print("Constructing Attention over Output Model")
 
     def create_cell(self, size=None):
@@ -278,8 +281,8 @@ class AttentionKeyValueModel(AttentionModel):
     and the last 3rd the vector representations attended over
     """
 
-    def __init__(self, is_training, config, targets, input_data, lengths):
-        super(AttentionKeyValueModel, self).__init__(is_training, config, targets, input_data, lengths)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
+        super(AttentionKeyValueModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
         print("Constructing Attention Key Value Model")
 
     def create_cell(self, size=None):
@@ -295,8 +298,8 @@ class AttentionKeyValueModel(AttentionModel):
 
 
 class AttentionWithoutLambdaModel(AttentionKeyValueModel):
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate):
-        super(AttentionWithoutLambdaModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
+        super(AttentionWithoutLambdaModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
         print("Constructing Attention Without Lambda Model")
 
     def create_cell(self, size=None):
@@ -307,8 +310,8 @@ class AttentionWithoutLambdaModel(AttentionKeyValueModel):
 
 
 class AttentionBaselineModel(AttentionModel):
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate):
-        super(AttentionBaselineModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
+        super(AttentionBaselineModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
         print("Constructing Attention Baseline Model")
 
     def create_cell(self, size=None):

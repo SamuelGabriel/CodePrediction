@@ -117,6 +117,7 @@ def jagged_softmax(input, counts):
 
 
 def tile_vector(vector, number):
+    # makes a vector of size len(vector)*number, in which every entry is repeated number times
     # an eval removed
     return tf.reshape(tf.tile(tf.expand_dims(vector,1), [1, number]), [-1])
 

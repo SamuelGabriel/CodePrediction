@@ -20,16 +20,15 @@ print(sys.version)
 
 class ModelParams(object):
     def __init__(self):
-        self.lambda_type = 'state' # Method to calculate lambda, possible values are fixed, state, att, input.
+        self.lambda_type = ['state', 'att', 'input'] # Method to calculate lambda, possible values are fixed, state, att, input.
         # state, att and input can be combined using + eg state+att for state and attention. BUT THIS + is not supported
         self.max_grad_norm = 5 # Maximum norm for gradients
         self.num_layers = 1 # Number of LSTM layers
         self.hidden_size = 200 # Size of hidden state 
         self.num_samples = 0 # Number of samples for sampled softmax
-        self.max_attention = 10 # Maximum size of attention matrix
-        self.learning_rate = 1.0 # Gradient Descent Learning Rate
+        self.max_attention = 20 # Maximum size of attention matrix
         self.attention = ['identifiers'] # len is how many attentions to use # eiher 'full' or 'identifiers'
-        self.attention_variant = 'input' # which kind of attention to use
+        self.attention_variant = 'output' # which kind of attention to use 'output' or 'input'
 
     def set_hyperparameters(self, vocab_size, seq_length, batch_size):
         self.vocab_size = vocab_size
@@ -164,29 +163,6 @@ class Model(object):
         self.ops['loss'] = model.cost
         predictions = tf.reshape(tf.argmax(model.logits, -1), [m_params.seq_length, m_params.batch_size])
         self.ops['num_correct_tokens'] = tf.reduce_sum(tf.cast(tf.equal(predictions, tokens[1:,:]), tf.int64) * mask[1:, :])
-        '''
-        embedding = tf.get_variable('embedding', shape=[len(self.metadata['token_vocab']), embedding_size])
-        embedded_tokens = tf.nn.embedding_lookup(embedding, self.placeholders['tokens'])
-        gru = tf.nn.rnn_cell.GRUCell(embedding_size)
-        initial_state = gru.zero_state(self.hyperparameters['batch_size'], dtype=tf.float32)
-
-        outputs, state = tf.nn.dynamic_rnn(gru, embedded_tokens, initial_state=initial_state)
-        D = tf.get_variable('D', shape=[embedding_size, len(self.metadata['token_vocab'])])#, constraint=lambda x: tf.clip_by_value(x, 0, np.infty))
-        b_D = tf.get_variable('b_D', shape=[len(self.metadata['token_vocab'])]) #, constraint=lambda x: tf.clip_by_value(x, 0, np.infty))
-        logits = tf.einsum('ij,kli-> klj', D, outputs) + b_D
-        mask = tf.sequence_mask(self.placeholders['tokens_lengths'], max_len, dtype=tf.int64)
-        # norms = tf.norm(logits, ord=1, axis=-1, keepdims=True)
-        # normalized_logits = tf.truediv(logits, norms)
-        # inverted_logits = -normalized_logits
-        # losses = tf.one_hot(self.placeholders['tokens'], len(self.metadata['token_vocab'])) * inverted_logits
-        # self.ops['loss'] = tf.reduce_sum(losses)
-        
-        self.ops['loss'] = tf.reduce_sum(tf.nn.sparse_softmax_cross_entropy_with_logits(labels=self.placeholders['tokens'][:,1:], logits=logits[:,:-1]))
-
-        #TODO# Insert your accuracy code here, creating self.ops['num_correct_tokens']
-
-        self.ops['num_correct_tokens'] = tf.reduce_sum(tf.cast(tf.equal(tf.argmax(logits[:,:-1], -1), self.placeholders['tokens'][:,1:]), tf.int64) * mask[:, 1:])
-        '''
 
     def __make_training_step(self) -> None:
         """
