@@ -17,17 +17,20 @@ import sys
 import utils
 print(sys.version)
 
+from tensorflow.python import debug as tf_debug
+
+
 
 class ModelParams(object):
     def __init__(self):
         self.lambda_type = ['state', 'att', 'input'] # Method to calculate lambda, possible values are fixed, state, att, input.
-        # state, att and input can be combined using + eg state+att for state and attention. BUT THIS + is not supported
+        # state, att and input can be combined or also just be 'fixed'
         self.max_grad_norm = 5 # Maximum norm for gradients
         self.num_layers = 1 # Number of LSTM layers
         self.hidden_size = 200 # Size of hidden state 
         self.num_samples = 0 # Number of samples for sampled softmax
         self.max_attention = 20 # Maximum size of attention matrix
-        self.attention = ['identifiers'] # len is how many attentions to use # eiher 'full' or 'identifiers'
+        self.attention = ['1'] * 0 # len is how many attentions to use # eiher 'full' or 'identifiers'
         self.attention_variant = 'output' # which kind of attention to use 'output' or 'input'
 
     def set_hyperparameters(self, vocab_size, seq_length, batch_size):
@@ -81,7 +84,7 @@ class Model(object):
 
         self.__run_name = hyperparameters['run_id']
         self.__model_save_dir = model_save_dir or "."
-        self.__sess = tf.Session(graph=tf.Graph())#, config=tf.ConfigProto(log_device_placement=True))
+        self.__sess = tf.Session(graph=tf.Graph()) # tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))#, config=tf.ConfigProto(log_device_placement=True))
 
     @property
     def metadata(self):
@@ -161,7 +164,7 @@ class Model(object):
         mask = tf.transpose(tf.sequence_mask(self.placeholders['tokens_lengths'], self.hyperparameters['max_len'], dtype=tf.int64))
         # Mask is not active for training, but I think it is the same in the model
         self.ops['loss'] = model.cost
-        predictions = tf.reshape(tf.argmax(model.logits, -1), [m_params.seq_length, m_params.batch_size])
+        predictions = tf.reshape(tf.argmax(model.predict, -1), [m_params.seq_length, m_params.batch_size])
         self.ops['num_correct_tokens'] = tf.reduce_sum(tf.cast(tf.equal(predictions, tokens[1:,:]), tf.int64) * mask[1:, :])
 
     def __make_training_step(self) -> None:

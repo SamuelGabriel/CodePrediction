@@ -174,8 +174,8 @@ class AttentionModel(BasicModel):
 
     def rnn(self, cell, inputs):
         inputs = tf.concat(axis=2, values=[inputs,
-                            tf.cast(self._masks, tf.float32),
-                            tf.cast(tf.expand_dims(self.input_data, 2), tf.float32)])
+                            tf.cast(self._masks, tf.float32), # add mask
+                            tf.cast(tf.expand_dims(self.input_data, 2), tf.float32)]) # add indexes of input data
 
         #return rnn.dynamic_attention_rnn(cell, inputs, self._max_attention, self.num_tasks, self.batch_size,
         #                                 sequence_length=self.actual_lengths, initial_state=self.initial_state)
@@ -206,14 +206,18 @@ class AttentionModel(BasicModel):
             return tf.reduce_sum(weighted, [0])
 
         output, alpha_tensor, attn_id_tensor, lmbda, state = self.rnn(cell, inputs)
+        # inputs is a tensor of (steps, batch, size)
         output = tf.reshape(output, [-1, self.size], name="output_reshape")
         # (steps, batch, size) -> (steps*batch, size)
 
         lmbda = tf.reshape(lmbda, [-1, self.num_tasks], name="lmbda_reshape")  # (steps*batch, tasks)
         task_weights = tf.transpose(lmbda)
+
+        # alpha_tensor has shape (steps, batch, num_attns, max_attention)
         alphas = [tf.reshape(alpha_tensor[:, :, t, :], [-1, self._max_attention]) for t in range(self.num_tasks-1)]
+        # the ids of all the things attended over with alphas also shape (steps, batch, num_attns, max_attention)
         attn_ids = [tf.reshape(attn_id_tensor[:, :, t, :], [-1, self._max_attention]) for t in range(self.num_tasks-1)]
-        # (steps, batch, k) -> (steps*batch, k)
+        # each item: (steps, batch, k) -> (steps*batch, k)
 
         softmax_w = tf.get_variable("softmax_w", [self.size, self.vocab_size])
         softmax_b = tf.get_variable("softmax_b", [self.vocab_size])
@@ -229,6 +233,8 @@ class AttentionModel(BasicModel):
 
         prediction_tensor = tf.stack([standard_predict] + attn_predict)
         predict = weighted_average(prediction_tensor, task_weights)
+        # size  (steps*batch, vocab)
+        # are theses already normailzed probabilities?
 
         labels = tf.reshape(self.targets, [-1], name="label_reshape")
 

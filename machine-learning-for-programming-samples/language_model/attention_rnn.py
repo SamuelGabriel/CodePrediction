@@ -32,7 +32,9 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
                 tuple(attn_id_sizes),  # Vocab ids for attention tokens
                 tuple(alpha_sizes),  # Alpha vectors (distribution over attention memory)
                 tuple([1] * self._num_attns),  # Attention Count for each attention mechanism
+                # is array of length of the number of attentions defined in the beginning, not the length (would be something like 1 or 2)
                 self._num_tasks)  # Number of tasks for lambda
+                # is num_attns + 1
 
         return size
 
