@@ -238,6 +238,8 @@ class AttentionModel(BasicModel):
 
         labels = tf.reshape(self.targets, [-1], name="label_reshape")
 
+        # Compute the loss, by computing the cross_entropy for two different parts differently
+        # Why can't this just be computed using `predict`? Shouldn't it be enough to compute xent on that?
         lm_cross_entropy = tf.nn.sampled_softmax_loss(weights=tf.transpose(softmax_w), biases=softmax_b,labels=tf.exapnd_dims(labels,1), inputs=output, num_sampled=self.config.num_samples, num_classes=self.vocab_size) \
             if self.config.num_samples > 0 else \
             tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
@@ -248,6 +250,10 @@ class AttentionModel(BasicModel):
 
         cross_entropies = tf.stack([lm_cross_entropy] + attn_cross_entropies) * task_weights
         cross_entropy = tf.reduce_sum(cross_entropies, [0])
+
+        # Try to make gradient much simpler using newer built-in gradients in tensorflow
+        # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=predict, labels=labels)
+        
 
         return logits, predict, cross_entropy, state
 

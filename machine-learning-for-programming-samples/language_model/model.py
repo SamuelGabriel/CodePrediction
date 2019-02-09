@@ -30,8 +30,8 @@ class ModelParams(object):
         self.hidden_size = 200 # Size of hidden state 
         self.num_samples = 0 # Number of samples for sampled softmax
         self.max_attention = 20 # Maximum size of attention matrix
-        self.attention = ['1'] * 0 # len is how many attentions to use # eiher 'full' or 'identifiers'
-        self.attention_variant = 'output' # which kind of attention to use 'output' or 'input'
+        self.attention = ['1'] * 1 # len is how many attentions to use # eiher 'full' or 'identifiers'
+        self.attention_variant = 'input' # which kind of attention to use 'output' or 'input'
 
     def set_hyperparameters(self, vocab_size, seq_length, batch_size):
         self.vocab_size = vocab_size
@@ -62,21 +62,25 @@ class Model(object):
                 'optimizer': 'Adam',  # One of "SGD", "RMSProp", "Adam"
                 'dropout_keep_rate': 0.9,
                 'learning_rate': 0.01,
-                'learning_rate_decay': 0.98,
+                'learning_rate_decay': 1.,
                 'momentum': 0.85,
-                'gradient_clip': 1,
+                'gradient_clip': 5,
                 'max_len': 100,
-                'batch_size': 75,
+                'batch_size': 30,
                 'max_epochs': 500,
                 'patience': 5,
                }
 
     def __init__(self,
                  hyperparameters: Dict[str, Any],
+                 modelparameters: Dict[str, Any],
                  model_save_dir: Optional[str]=None) -> None:
         # start with default hyper-params and then override them
         self.hyperparameters = self.get_default_hyperparameters()
         self.hyperparameters.update(hyperparameters)
+        self.modelparameters = ModelParams()
+        for key,value in modelparameters.items():
+            setattr(self.modelparameters,key,value)
 
         self.__metadata = {}  # type: Dict[str, Any]
         self.__placeholders = {}  # type: Dict[str, Union[tf.placeholder, tf.placeholder_with_default]]
@@ -115,6 +119,7 @@ class Model(object):
         data_to_save = {
                          "model_type": type(self).__name__,
                          "hyperparameters": self.hyperparameters,
+                         "modelparameters": self.modelparameters,
                          "metadata": self.metadata,
                          "weights": weights_to_save,
                          "run_name": self.run_name,
@@ -136,6 +141,8 @@ class Model(object):
                 tf.placeholder(dtype=tf.int64, shape=[self.hyperparameters['batch_size']], name='tokens_lengths')
             self.placeholders['masks'] = \
                 tf.placeholder(dtype=tf.bool, shape=[self.hyperparameters['batch_size'], self.hyperparameters['max_len']], name='masks')
+            self.placeholders['global_step'] = \
+                tf.placeholder(dtype=tf.int64, shape=(), name='global_step')
 
             self.make_model()
             self.__make_training_step()
@@ -151,7 +158,7 @@ class Model(object):
         tokens_lengths = self.placeholders['tokens_lengths']
         dropout_keep_rate = self.placeholders['dropout_keep_rate']
         #TODO# Insert your model here, creating self.ops['loss']
-        m_params = ModelParams()
+        m_params = self.modelparameters
         m_params.set_hyperparameters(vocab_size=len(self.metadata['token_vocab']), seq_length=self.hyperparameters['max_len']-1, batch_size=self.hyperparameters['batch_size'])
         
         if m_params.attention:
@@ -172,14 +179,18 @@ class Model(object):
         Constructs self.ops['train_step'] from self.ops['loss'] and hyperparameters.
         """
         optimizer_name = self.hyperparameters['optimizer'].lower()
+        learning_rate = tf.train.exponential_decay(self.hyperparameters['learning_rate'],
+                                                   self.placeholders['global_step'],
+                                                   1, self.hyperparameters['learning_rate_decay'],
+                                                   staircase=True)
         if optimizer_name == 'sgd':
-            optimizer = tf.train.GradientDescentOptimizer(learning_rate=self.hyperparameters['learning_rate'])
+            optimizer = tf.train.GradientDescentOptimizer(learning_rate=learning_rate)
         elif optimizer_name == 'rmsprop':
             optimizer = tf.train.RMSPropOptimizer(learning_rate=self.hyperparameters['learning_rate'],
                                                   decay=self.hyperparameters['learning_rate_decay'],
                                                   momentum=self.hyperparameters['momentum'])
         elif optimizer_name == 'adam':
-            optimizer = tf.train.AdamOptimizer(learning_rate=self.hyperparameters['learning_rate'])
+            optimizer = tf.train.AdamOptimizer(learning_rate=learning_rate)
         else:
             raise Exception('Unknown optimizer "%s".' % (self.hyperparameters['optimizer']))
 
@@ -288,6 +299,7 @@ class Model(object):
 
     def __split_data_into_minibatches(self,
                                       data: LoadedSamples,
+                                      epoch_number: int,
                                       is_train: bool,
                                       drop_incomplete_final_minibatch: bool=True) \
             -> Iterable[Tuple[int, Dict[tf.Tensor, Any]]]:
@@ -320,12 +332,13 @@ class Model(object):
                 self.placeholders['dropout_keep_rate']: self.hyperparameters['dropout_keep_rate'] if is_train else 1.0,
                 self.placeholders['tokens']: data['tokens'][chunked_indices],
                 self.placeholders['tokens_lengths']: data['tokens_lengths'][chunked_indices],
-                self.placeholders['masks']: data['masks'][chunked_indices]
+                self.placeholders['masks']: data['masks'][chunked_indices],
+                self.placeholders['global_step']: epoch_number
             }
 
             yield len(chunked_indices), feed_dict
 
-    def __run_epoch_in_batches(self, data: LoadedSamples, epoch_name: str, is_train: bool) -> Tuple[float, float]:
+    def __run_epoch_in_batches(self, data: LoadedSamples, epoch_name: str, is_train: bool, epoch_number: int =0) -> Tuple[float, float]:
         """
         Args:
             data: The loaded data to run the model on.
@@ -337,7 +350,7 @@ class Model(object):
         """
         epoch_loss, epoch_correct_predictions, epoch_total_tokens = 0.0, 0.0, 0.0
         num_samples_so_far, num_total_samples = 0, len(data['tokens'])
-        data_generator = self.__split_data_into_minibatches(data, is_train=is_train)
+        data_generator = self.__split_data_into_minibatches(data, epoch_number, is_train=is_train)
         epoch_start = time.time()
         for minibatch_counter, (samples_in_batch, batch_data_dict) in enumerate(data_generator):
             print("%s: Batch %5i. Processed %i/%i samples. Loss so far: %.4f.  Acc. so far: %.2f%%  "
@@ -388,11 +401,11 @@ class Model(object):
                 print('==== Epoch %i ====' % (epoch_number,))
                 train_loss, train_acc = self.__run_epoch_in_batches(train_data,
                                                                     "%i (train)" % (epoch_number,),
-                                                                    is_train=True)
+                                                                    is_train=True, epoch_number=epoch_number)
                 print(' Training Loss: %.6f, Accuracy: %.2f%%' % (train_loss, train_acc))
                 val_loss, val_acc = self.__run_epoch_in_batches(valid_data, 
                                                                 "%i (valid)" % (epoch_number,),
-                                                                is_train=False)
+                                                                is_train=False, epoch_number=epoch_number)
                 print(' Validation Loss: %.6f, Accuracy: %.2f%%' % (val_loss, val_acc))
 
                 if val_loss < best_val_loss:

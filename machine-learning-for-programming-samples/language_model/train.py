@@ -10,6 +10,7 @@ Options:
     --max-num-epochs EPOCHS          The maximum number of epochs to run [default: 300]
     --max-num-files INT              Number of files to load.
     --hypers-override HYPERS         JSON dictionary overriding hyperparameter values.
+    --models-override HYPERS         JSON dictionary overriding modelparameter values.
     --run-name NAME                  Picks a name for the trained model.
     --debug                          Enable debug routines. [default: False]
 """
@@ -29,10 +30,11 @@ def run_train(train_data_dir: str,
               valid_data_dir: str,
               save_dir: str,
               hyperparameters: Dict[str, Any],
+              modelparameters: Dict[str, Any],
               max_num_files: Optional[int]=None,
               parallelize: bool=True) \
         -> None:
-    model = Model(hyperparameters, model_save_dir=save_dir)
+    model = Model(hyperparameters, modelparameters, model_save_dir=save_dir)
 
     model.load_metadata_from_dir(train_data_dir, max_num_files=max_num_files)
     print("Loaded metadata for model: ")
@@ -67,6 +69,13 @@ def run(arguments) -> None:
     hypers_override = arguments.get('--hypers-override')
     if hypers_override is not None:
         hyperparameters.update(json.loads(hypers_override))
+    
+    models_override = arguments.get('--models-override')
+    
+    print('Extra params: ', hypers_override, models_override)
+    modelparameters = {}
+    if models_override is not None:
+        modelparameters = json.loads(models_override)
 
     save_model_dir = args['SAVE_DIR']
     os.makedirs(save_model_dir, exist_ok=True)
@@ -75,6 +84,7 @@ def run(arguments) -> None:
               arguments['VALID_DATA_DIR'],
               save_model_dir,
               hyperparameters,
+              modelparameters,
               max_num_files=arguments.get('--max-num-files'))
 
 

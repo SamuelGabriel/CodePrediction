@@ -26,7 +26,7 @@ from model import Model
 def restore(path: str) -> Model:
     with gzip.open(path) as f:
         saved_data = pickle.load(f)
-    model = Model(saved_data['hyperparameters'], saved_data.get('run_name'))
+    model = Model(saved_data['hyperparameters'], saved_data['modelparameters'], saved_data.get('run_name'))
     model.metadata.update(saved_data['metadata'])
     model.init()
 
