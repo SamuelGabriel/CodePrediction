@@ -211,7 +211,12 @@ class AttentionModel(BasicModel):
         # (steps, batch, size) -> (steps*batch, size)
 
         lmbda = tf.reshape(lmbda, [-1, self.num_tasks], name="lmbda_reshape")  # (steps*batch, tasks)
-        task_weights = tf.transpose(lmbda)
+        if False:
+            p = tf.print(lmbda[-10:, :])
+            with tf.control_dependencies([p]):
+                task_weights = tf.transpose(lmbda)
+        else:
+            task_weights = tf.transpose(lmbda)
 
         # alpha_tensor has shape (steps, batch, num_attns, max_attention)
         alphas = [tf.reshape(alpha_tensor[:, :, t, :], [-1, self._max_attention]) for t in range(self.num_tasks-1)]

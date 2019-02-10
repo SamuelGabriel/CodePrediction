@@ -32,6 +32,7 @@ class ModelParams(object):
         self.max_attention = 20 # Maximum size of attention matrix
         self.attention = ['1'] * 1 # len is how many attentions to use # eiher 'full' or 'identifiers'
         self.attention_variant = 'input' # which kind of attention to use 'output' or 'input'
+        self.masked_copying = True # should the attention be given a mask?
 
     def set_hyperparameters(self, vocab_size, seq_length, batch_size):
         self.vocab_size = vocab_size
@@ -81,6 +82,8 @@ class Model(object):
         self.modelparameters = ModelParams()
         for key,value in modelparameters.items():
             setattr(self.modelparameters,key,value)
+        print(self.hyperparameters)
+        print(self.modelparameters.__dict__)
 
         self.__metadata = {}  # type: Dict[str, Any]
         self.__placeholders = {}  # type: Dict[str, Union[tf.placeholder, tf.placeholder_with_default]]
@@ -88,7 +91,7 @@ class Model(object):
 
         self.__run_name = hyperparameters['run_id']
         self.__model_save_dir = model_save_dir or "."
-        self.__sess = tf.Session(graph=tf.Graph()) # tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))#, config=tf.ConfigProto(log_device_placement=True))
+        self.__sess = tf.Session(graph=tf.Graph())# tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf.Session(graph=tf.Graph())#, config=tf.ConfigProto(log_device_placement=True))
 
     @property
     def metadata(self):
@@ -162,7 +165,10 @@ class Model(object):
         m_params.set_hyperparameters(vocab_size=len(self.metadata['token_vocab']), seq_length=self.hyperparameters['max_len']-1, batch_size=self.hyperparameters['batch_size'])
         
         if m_params.attention:
-            masks = tf.stack([masks[:-1,:]]*len(m_params.attention), axis=2)
+            if m_params.masked_copying:
+                masks = tf.stack([masks[:-1,:]]*len(m_params.attention), axis=2)
+            else:
+                masks = tf.ones([self.hyperparameters['max_len']-1, self.hyperparameters['batch_size'], len(m_params.attention)])
         else:
             masks = None
 
