@@ -1,5 +1,7 @@
 # R252 Project (sgm48)
 
+## Summary
+The projects core is to reimplement 'Learning Python Code Suggestion with a Sparse Pointer Network' by Bhoopchand et al. (https://arxiv.org/pdf/1611.08307.pdf)
 ## Overview of where code is
 The main code is in `src`, which is based on the language model provided in class.
 It incorporates the model described in my paper in `language_model`.
@@ -12,7 +14,7 @@ It incorporates the model described in my paper in `language_model`.
 >
 > -- Original Proposal
 
-I took another path in this week and ended up with already having a reimplementation of `Sparse Pointer Networks`, but I could not see any improvements so far compared to LSTM.
+I took another path in this week and ended up with already having a reimplementation of 'Sparse Pointer Networks', but I could not see any improvements so far compared to LSTM.
 Done at the end of this week:
 - Make source code from the paper work with the pipeline provided in class: change python version and tf version
 - Implemented a pipeline to mask non-identifiers for the copying mechanism
@@ -20,7 +22,7 @@ Done at the end of this week:
 Risks for the future:
 - Unsuccessful bug hunt: no improvement in performance over LSTM
 
-### Reimplementation of a `Sparse Pointer Network` on a Trivially Prepared Dataset (Until Session 5)
+### Reimplementation of a 'Sparse Pointer Network' on a Trivially Prepared Dataset (Until Session 5)
 > The goal for session 5 is to finish a reimplementation of the SPN model (Bhoopchand et al.), based on the knowledge gained from the previous week. 
 >
 > -- Original Proposal
