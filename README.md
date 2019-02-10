@@ -34,3 +34,4 @@ Done this week:
 > -- Original Proposal
 
 ### Padding (Until Session 8)
+No proposal yet...
