@@ -30,6 +30,7 @@ Risks for the future:
 Done this week:
 - New Dataset split, with a 5x increased training set size
 - Found reason for bad training performance: the lambda parameter that is the gate between choosing to use the predictions of the standard LSTM and the attention copying seems to be trained towards only allowing LSTM predictions fairly quick. Thus after first epoch it is almost 0 for the attention copying for all examples in a sample I took.
+    - This problem is the same for attention over inputs and outputs
 
 ### Proper Dataset Preparation (Until Session 6)
 > In this week the plan is to come as close as possible to the way the dataset was prepared in the paper. There might be cases where this is hard, for a lot of identifiers in the dataset we use in class it is not totally clear which of the types of identifiers they belong to and I  might need to come up with some tricks to figure that out.\\

@@ -122,6 +122,8 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
         with tf.variable_scope("Lambda"):
             if self.lambda_type == "fixed":
                 return tf.ones([tf.shape(state)[0], num_tasks]) / num_tasks
+            elif self.lambda_type == "only_copy":
+                return tf.ones([tf.shape(state)[0],1]) * tf.constant([0.]+([1./(num_tasks-1)]*(num_tasks-1)))
             else:
                 lambda_state = []
                 if "state" in self.lambda_type:
@@ -138,6 +140,20 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
                 return tf.nn.softmax(tf.matmul(state, w_lambda) + b_lambda)
 
     def _attention_states(self, attn_input, attn_ids, attn_count, lm_input, mask, raw_inputs):
+        """This function updates the state the attention works with. That means updating the past token representations and ids. With the new representation of the current word: `lm_input` and ids `raw_inputs`. 
+
+        Arguments:
+            attn_input {[type]} -- [description]
+            attn_ids {[type]} -- [description]
+            attn_count {[type]} -- [description]
+            lm_input {[type]} -- [description]
+            mask {[type]} -- [description]
+            raw_inputs {[type]} -- [description]
+        
+        Returns:
+            [type] -- [description]
+        """
+        # it seems like `attn_input` and `attn_ids` is all zero
         new_attn_input = tf.concat(values=[
             tf.slice(attn_input, [0, 1, 0], [-1, -1, -1]),
             tf.expand_dims(lm_input, 1)
@@ -148,6 +164,7 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
             tf.expand_dims(raw_inputs, 1)
         ], axis=1)
 
+        # What is this? Doesn't this mean we replicate parts of the history?
         new_attn_input = tf.where(mask, new_attn_input, attn_input)
         new_attn_ids = tf.where(mask, new_attn_ids, attn_ids)
         new_attn_count = tf.where(mask, tf.minimum(attn_count + 1, self._attn_length), attn_count)
@@ -157,13 +174,14 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
     def _attention(self, state, attn_input, attn_counts, scope):
         with tf.variable_scope(scope):
             w = tf.get_variable('w', [self._size, 1])  # (size, 1)
-
             attn_input_shaped = tf.reshape(attn_input, [-1, self._size])  # (batch, k, size) -> (batch*k, size)
             m1 = tf.contrib.layers.linear(attn_input_shaped, self._size)  # (batch*k, size)
             m2 = tf.contrib.layers.linear(state, self._size)  # (batch, size)
             m2 = tf.reshape(tf.tile(m2, [1, self._attn_length]), [-1, self._size])  # (batch*k, size)
+            # all are at the borders of tanh so very large and small values
             M = tf.tanh(m1 + m2)  # (batch*k, size)
             alpha = tf.reshape(tf.matmul(M, w), [-1, self._attn_length])  # (batch, k)
+            # all are very equal...
             alpha = tf.nn.softmax(alpha)
             alpha_shaped = tf.expand_dims(alpha, 2)  # (batch, k, 1)
 

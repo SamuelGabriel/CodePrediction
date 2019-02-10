@@ -92,6 +92,7 @@ class Model(object):
         self.__run_name = hyperparameters['run_id']
         self.__model_save_dir = model_save_dir or "."
         self.__sess = tf.Session(graph=tf.Graph())# tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf.Session(graph=tf.Graph())#, config=tf.ConfigProto(log_device_placement=True))
+        self.__writer = tf.summary.FileWriter('/tmp/tf/1')
 
     @property
     def metadata(self):
@@ -172,7 +173,8 @@ class Model(object):
         else:
             masks = None
 
-        model = utils.create_model(True, m_params, tokens[1:,:], tokens[:-1,:], tokens_lengths, dropout_keep_rate, masks=masks)
+        with tf.variable_scope("m", initializer=tf.initializers.random_uniform(minval=-.05, maxval=.05)):
+            model = utils.create_model(True, m_params, tokens[1:,:], tokens[:-1,:], tokens_lengths, dropout_keep_rate, masks=masks)
 
         mask = tf.transpose(tf.sequence_mask(self.placeholders['tokens_lengths'], self.hyperparameters['max_len'], dtype=tf.int64))
         # Mask is not active for training, but I think it is the same in the model
@@ -397,6 +399,7 @@ class Model(object):
         model_path = os.path.join(self.__model_save_dir,
                                   "%s_model_best.pkl.gz" % (self.hyperparameters['run_id'],))
         with self.__sess.as_default():
+            self.__writer.add_graph(self.sess.graph)
             init_op = tf.variables_initializer(self.__sess.graph.get_collection(tf.GraphKeys.GLOBAL_VARIABLES))
             self.__sess.run(init_op)
             self.save(model_path)
