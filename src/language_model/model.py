@@ -31,7 +31,7 @@ class ModelParams(object):
         self.num_samples = 0 # Number of samples for sampled softmax
         self.max_attention = 20 # Maximum size of attention matrix
         self.attention = ['1'] * 1 # len is how many attentions to use # eiher 'full' or 'identifiers'
-        self.attention_variant = 'output' # which kind of attention to use 'output' or 'input'
+        self.attention_variant = 'input' # which kind of attention to use 'output' or 'input'
         self.masked_copying = True # should the attention be given a mask?
 
     def set_hyperparameters(self, vocab_size, seq_length, batch_size):
