@@ -184,7 +184,7 @@ def change_graph(G: nx.DiGraph, change_name: Callable):
         proposed_name = propose_name()
         try_counter = 0
         while proposed_name in given_names:
-            proposed_name = proposed_name()
+            proposed_name = propose_name()
             try_counter += 1
             if try_counter > 1000:
                 raise ValueError('To small number range for current file')
