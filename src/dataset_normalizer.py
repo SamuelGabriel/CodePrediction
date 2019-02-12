@@ -70,6 +70,7 @@ def remove_nodes_with_property(G: nx.Graph, rm_prop: Callable):
             G.remove_node(n)
 
 
+# This is veeery slow, need to work on that: all ancestors are first computed, Graph is copied
 def has_ancestor_in(G: nx.DiGraph, n: int, s: set):
     H = G.copy()
     remove_edges_with_property(H,
