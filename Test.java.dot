@@ -7,360 +7,174 @@ digraph {
  }
  subgraph {
   rank=same;
-1 [ label="PACKAGE" ];
-
 5 [ label="TYPE_DECLS" ];
 
+1 [ label="PACKAGE" ];
+
  }
  subgraph {
   rank=same;
-2 [ label="PACKAGE" ];
-
 6 [ label="CLASS" ];
 
+2 [ label="PACKAGE" ];
+
  }
  subgraph {
   rank=same;
-3 [ label="PACKAGE_NAME" ];
+7 [ label="MODIFIERS" ];
 
 9 [ label="MEMBERS" ];
 
-7 [ label="MODIFIERS" ];
+3 [ label="PACKAGE_NAME" ];
 
  }
  subgraph {
   rank=same;
-10 [ label="METHOD" ];
-
-45 [ label="METHOD" ];
-
 8 [ label="MODIFIERS" ];
 
+17 [ label="METHOD" ];
+
+10 [ label="VARIABLE" ];
+
  }
  subgraph {
   rank=same;
-21 [ label="BODY" ];
+22 [ label="PARAMETERS" ];
 
-13 [ label="RETURN_TYPE" ];
+18 [ label="MODIFIERS" ];
 
-15 [ label="PARAMETERS" ];
+28 [ label="BODY" ];
+
+20 [ label="RETURN_TYPE" ];
+
+15 [ label="INITIALIZER" ];
+
+13 [ label="TYPE" ];
 
 11 [ label="MODIFIERS" ];
 
-46 [ label="MODIFIERS" ];
-
-56 [ label="BODY" ];
-
-48 [ label="RETURN_TYPE" ];
-
-50 [ label="PARAMETERS" ];
-
  }
  subgraph {
   rank=same;
-22 [ label="BLOCK" ];
+23 [ label="VARIABLE" ];
+
+19 [ label="MODIFIERS" ];
+
+29 [ label="BLOCK" ];
+
+21 [ label="PRIMITIVE_TYPE" ];
+
+16 [ label="INT_LITERAL" ];
 
 14 [ label="PRIMITIVE_TYPE" ];
 
-16 [ label="VARIABLE" ];
-
 12 [ label="MODIFIERS" ];
 
-47 [ label="MODIFIERS" ];
+ }
+ subgraph {
+  rank=same;
+26 [ label="TYPE" ];
 
-57 [ label="BLOCK" ];
-
-49 [ label="PRIMITIVE_TYPE" ];
-
-51 [ label="VARIABLE" ];
+30 [ label="STATEMENTS" ];
 
  }
  subgraph {
   rank=same;
-23 [ label="STATEMENTS" ];
+27 [ label="PRIMITIVE_TYPE" ];
 
-19 [ label="TYPE" ];
-
-58 [ label="STATEMENTS" ];
-
-54 [ label="TYPE" ];
+31 [ label="RETURN" ];
 
  }
  subgraph {
   rank=same;
-24 [ label="RETURN" ];
-
-20 [ label="PRIMITIVE_TYPE" ];
-
-59 [ label="RETURN" ];
-
-55 [ label="PRIMITIVE_TYPE" ];
+32 [ label="EXPRESSION" ];
 
  }
  subgraph {
   rank=same;
-25 [ label="EXPRESSION" ];
-
-60 [ label="EXPRESSION" ];
+33 [ label="PLUS" ];
 
  }
  subgraph {
   rank=same;
-26 [ label="PLUS" ];
+36 [ label="RIGHT_OPERAND" ];
 
-61 [ label="PLUS" ];
-
- }
- subgraph {
-  rank=same;
-27 [ label="LEFT_OPERAND" ];
-
-43 [ label="RIGHT_OPERAND" ];
-
-62 [ label="LEFT_OPERAND" ];
-
-68 [ label="RIGHT_OPERAND" ];
-
- }
- subgraph {
-  rank=same;
-28 [ label="METHOD_INVOCATION" ];
-
-63 [ label="METHOD_INVOCATION" ];
-
-69 [ label="METHOD_INVOCATION" ];
-
- }
- subgraph {
-  rank=same;
-29 [ label="METHOD_SELECT" ];
-
-64 [ label="METHOD_SELECT" ];
-
-66 [ label="ARGUMENTS" ];
-
-72 [ label="ARGUMENTS" ];
-
-70 [ label="METHOD_SELECT" ];
-
- }
- subgraph {
-  rank=same;
-30 [ label="MEMBER_SELECT" ];
-
- }
- subgraph {
-  rank=same;
-31 [ label="EXPRESSION" ];
-
- }
- subgraph {
-  rank=same;
-32 [ label="METHOD_INVOCATION" ];
-
- }
- subgraph {
-  rank=same;
-33 [ label="METHOD_SELECT" ];
-
- }
- subgraph {
-  rank=same;
-34 [ label="MEMBER_SELECT" ];
-
- }
- subgraph {
-  rank=same;
-35 [ label="EXPRESSION" ];
-
- }
- subgraph {
-  rank=same;
-36 [ label="MEMBER_SELECT" ];
-
- }
- subgraph {
-  rank=same;
-37 [ label="EXPRESSION" ];
-
- }
- subgraph {
-  rank=same;
-38 [ label="MEMBER_SELECT" ];
-
- }
- subgraph {
-  rank=same;
-39 [ label="EXPRESSION" ];
-
- }
- subgraph {
-  rank=same;
-40 [ label="MEMBER_SELECT" ];
-
- }
- subgraph {
-  rank=same;
-41 [ label="EXPRESSION" ];
+34 [ label="LEFT_OPERAND" ];
 
  }
  subgraph {
  }
  subgraph {
-130 [ label="hdfs.Test" ];
+66 [ label="hdfs.Test" ];
 
-134 [ label="ret(int)" ];
+70 [ label="a" ];
 
-135 [ label="a" ];
+71 [ label="pa(int)" ];
 
-136 [ label="nextInt()" ];
+72 [ label="b" ];
 
-137 [ label="nextInt()" ];
+73 [ label="a" ];
 
-138 [ label="current()" ];
-
-139 [ label="current()" ];
-
-140 [ label="java.util.concurrent.ThreadLocalRandom" ];
-
-141 [ label="java.util.concurrent" ];
-
-142 [ label="java.util" ];
-
-143 [ label="java" ];
-
-144 [ label="a" ];
-
-145 [ label="pa(int)" ];
-
-146 [ label="a" ];
-
-147 [ label="ret(int)" ];
-
-148 [ label="ret(int)" ];
-
-149 [ label="a" ];
-
-150 [ label="ret(int)" ];
-
-151 [ label="ret(int)" ];
-
-152 [ label="a" ];
+74 [ label="b" ];
 
  }
  subgraph {
   rank=max;
-74 [ label="PACKAGE" ];
+38 [ label="PACKAGE" ];
 
-75 [ label="hdfs" , color=blue];
+39 [ label="hdfs" , color=blue];
 
-76 [ label="SEMI" ];
+40 [ label="SEMI" ];
 
-77 [ label="PUBLIC" ];
+41 [ label="PUBLIC" ];
 
-78 [ label="CLASS" ];
+42 [ label="CLASS" ];
 
-79 [ label="Test" , color=blue];
+43 [ label="Test" , color=blue];
 
-80 [ label="LBRACE" ];
+44 [ label="LBRACE" ];
 
-81 [ label="PUBLIC" ];
+45 [ label="PUBLIC" ];
 
-82 [ label="int" ];
+46 [ label="int" ];
 
-83 [ label="ret" , color=blue];
+47 [ label="a" , color=blue];
 
-84 [ label="LPAREN" ];
+48 [ label="EQ" ];
 
-85 [ label="int" ];
+49 [ label="1" ];
 
-86 [ label="a" , color=blue];
+50 [ label="SEMI" ];
 
-87 [ label="RPAREN" ];
+51 [ label="PUBLIC" ];
 
-88 [ label="LBRACE" ];
+52 [ label="int" ];
 
-89 [ label="RETURN" ];
+53 [ label="pa" , color=blue];
 
-90 [ label="java" , color=blue];
+54 [ label="LPAREN" ];
 
-91 [ label="DOT" ];
+55 [ label="int" ];
 
-92 [ label="util" , color=blue];
+56 [ label="b" , color=blue];
 
-93 [ label="DOT" ];
+57 [ label="RPAREN" ];
 
-94 [ label="concurrent" , color=blue];
+58 [ label="LBRACE" ];
 
-95 [ label="DOT" ];
+59 [ label="RETURN" ];
 
-96 [ label="ThreadLocalRandom" , color=blue];
+60 [ label="a" , color=blue];
 
-97 [ label="DOT" ];
+61 [ label="PLUS" ];
 
-98 [ label="current" , color=blue];
+62 [ label="b" , color=blue];
 
-99 [ label="LPAREN" ];
+63 [ label="SEMI" ];
 
-100 [ label="RPAREN" ];
+64 [ label="RBRACE" ];
 
-101 [ label="DOT" ];
-
-102 [ label="nextInt" , color=blue];
-
-103 [ label="LPAREN" ];
-
-104 [ label="RPAREN" ];
-
-105 [ label="PLUS" ];
-
-106 [ label="a" , color=blue];
-
-107 [ label="SEMI" ];
-
-108 [ label="RBRACE" ];
-
-109 [ label="PUBLIC" ];
-
-110 [ label="int" ];
-
-111 [ label="pa" , color=blue];
-
-112 [ label="LPAREN" ];
-
-113 [ label="int" ];
-
-114 [ label="a" , color=blue];
-
-115 [ label="RPAREN" ];
-
-116 [ label="LBRACE" ];
-
-117 [ label="RETURN" ];
-
-118 [ label="ret" , color=blue];
-
-119 [ label="LPAREN" ];
-
-120 [ label="a" , color=blue];
-
-121 [ label="RPAREN" ];
-
-122 [ label="PLUS" ];
-
-123 [ label="ret" , color=blue];
-
-124 [ label="LPAREN" ];
-
-125 [ label="a" , color=blue];
-
-126 [ label="RPAREN" ];
-
-127 [ label="SEMI" ];
-
-128 [ label="RBRACE" ];
-
-129 [ label="RBRACE" ];
+65 [ label="RBRACE" ];
 
  }
 0 -> 1 [ headport=w, tailport=e];
@@ -393,25 +207,25 @@ digraph {
 
 15 -> 16 [ headport=w, tailport=e];
 
-16 -> 19 [ headport=w, tailport=e];
+9 -> 17 [ headport=w, tailport=e];
 
-19 -> 20 [ headport=w, tailport=e];
+17 -> 18 [ headport=w, tailport=e];
 
-10 -> 21 [ headport=w, tailport=e];
+18 -> 19 [ headport=w, tailport=e];
 
-21 -> 22 [ headport=w, tailport=e];
+17 -> 20 [ headport=w, tailport=e];
+
+20 -> 21 [ headport=w, tailport=e];
+
+17 -> 22 [ headport=w, tailport=e];
 
 22 -> 23 [ headport=w, tailport=e];
 
-23 -> 24 [ headport=w, tailport=e];
-
-24 -> 25 [ headport=w, tailport=e];
-
-25 -> 26 [ headport=w, tailport=e];
+23 -> 26 [ headport=w, tailport=e];
 
 26 -> 27 [ headport=w, tailport=e];
 
-27 -> 28 [ headport=w, tailport=e];
+17 -> 28 [ headport=w, tailport=e];
 
 28 -> 29 [ headport=w, tailport=e];
 
@@ -425,350 +239,136 @@ digraph {
 
 33 -> 34 [ headport=w, tailport=e];
 
-34 -> 35 [ headport=w, tailport=e];
+33 -> 36 [ headport=w, tailport=e];
 
-35 -> 36 [ headport=w, tailport=e];
+38 -> 39 [ headport=n, tailport=s, weight=1000];
 
-36 -> 37 [ headport=w, tailport=e];
+39 -> 40 [ headport=n, tailport=s, weight=1000];
 
-37 -> 38 [ headport=w, tailport=e];
+40 -> 41 [ headport=n, tailport=s, weight=1000];
 
-38 -> 39 [ headport=w, tailport=e];
+41 -> 42 [ headport=n, tailport=s, weight=1000];
 
-39 -> 40 [ headport=w, tailport=e];
+42 -> 43 [ headport=n, tailport=s, weight=1000];
 
-40 -> 41 [ headport=w, tailport=e];
+43 -> 44 [ headport=n, tailport=s, weight=1000];
 
-26 -> 43 [ headport=w, tailport=e];
+44 -> 45 [ headport=n, tailport=s, weight=1000];
 
-9 -> 45 [ headport=w, tailport=e];
+45 -> 46 [ headport=n, tailport=s, weight=1000];
 
-45 -> 46 [ headport=w, tailport=e];
+46 -> 47 [ headport=n, tailport=s, weight=1000];
 
-46 -> 47 [ headport=w, tailport=e];
+47 -> 48 [ headport=n, tailport=s, weight=1000];
 
-45 -> 48 [ headport=w, tailport=e];
+48 -> 49 [ headport=n, tailport=s, weight=1000];
 
-48 -> 49 [ headport=w, tailport=e];
+49 -> 50 [ headport=n, tailport=s, weight=1000];
 
-45 -> 50 [ headport=w, tailport=e];
+50 -> 51 [ headport=n, tailport=s, weight=1000];
 
-50 -> 51 [ headport=w, tailport=e];
+51 -> 52 [ headport=n, tailport=s, weight=1000];
 
-51 -> 54 [ headport=w, tailport=e];
+52 -> 53 [ headport=n, tailport=s, weight=1000];
 
-54 -> 55 [ headport=w, tailport=e];
+53 -> 54 [ headport=n, tailport=s, weight=1000];
 
-45 -> 56 [ headport=w, tailport=e];
+54 -> 55 [ headport=n, tailport=s, weight=1000];
 
-56 -> 57 [ headport=w, tailport=e];
+55 -> 56 [ headport=n, tailport=s, weight=1000];
 
-57 -> 58 [ headport=w, tailport=e];
+56 -> 57 [ headport=n, tailport=s, weight=1000];
 
-58 -> 59 [ headport=w, tailport=e];
+57 -> 58 [ headport=n, tailport=s, weight=1000];
 
-59 -> 60 [ headport=w, tailport=e];
+58 -> 59 [ headport=n, tailport=s, weight=1000];
 
-60 -> 61 [ headport=w, tailport=e];
+59 -> 60 [ headport=n, tailport=s, weight=1000];
 
-61 -> 62 [ headport=w, tailport=e];
+60 -> 61 [ headport=n, tailport=s, weight=1000];
 
-62 -> 63 [ headport=w, tailport=e];
+61 -> 62 [ headport=n, tailport=s, weight=1000];
 
-63 -> 64 [ headport=w, tailport=e];
+62 -> 63 [ headport=n, tailport=s, weight=1000];
 
-63 -> 66 [ headport=w, tailport=e];
+63 -> 64 [ headport=n, tailport=s, weight=1000];
 
-61 -> 68 [ headport=w, tailport=e];
+64 -> 65 [ headport=n, tailport=s, weight=1000];
 
-68 -> 69 [ headport=w, tailport=e];
+10 -> 47 [ color=blue];
 
-69 -> 70 [ headport=w, tailport=e];
+23 -> 56 [ color=blue];
 
-69 -> 72 [ headport=w, tailport=e];
+2 -> 38 [ ];
 
-74 -> 75 [ headport=n, tailport=s, weight=1000];
+2 -> 40 [ ];
 
-75 -> 76 [ headport=n, tailport=s, weight=1000];
+8 -> 41 [ ];
 
-76 -> 77 [ headport=n, tailport=s, weight=1000];
+6 -> 42 [ ];
 
-77 -> 78 [ headport=n, tailport=s, weight=1000];
+6 -> 43 [ color=blue];
 
-78 -> 79 [ headport=n, tailport=s, weight=1000];
+6 -> 44 [ ];
 
-79 -> 80 [ headport=n, tailport=s, weight=1000];
+12 -> 45 [ ];
 
-80 -> 81 [ headport=n, tailport=s, weight=1000];
+14 -> 46 [ ];
 
-81 -> 82 [ headport=n, tailport=s, weight=1000];
+10 -> 48 [ ];
 
-82 -> 83 [ headport=n, tailport=s, weight=1000];
+16 -> 49 [ ];
 
-83 -> 84 [ headport=n, tailport=s, weight=1000];
+10 -> 50 [ ];
 
-84 -> 85 [ headport=n, tailport=s, weight=1000];
+19 -> 51 [ ];
 
-85 -> 86 [ headport=n, tailport=s, weight=1000];
+21 -> 52 [ ];
 
-86 -> 87 [ headport=n, tailport=s, weight=1000];
+17 -> 53 [ color=blue];
 
-87 -> 88 [ headport=n, tailport=s, weight=1000];
+17 -> 54 [ ];
 
-88 -> 89 [ headport=n, tailport=s, weight=1000];
+27 -> 55 [ ];
 
-89 -> 90 [ headport=n, tailport=s, weight=1000];
+17 -> 57 [ ];
 
-90 -> 91 [ headport=n, tailport=s, weight=1000];
+29 -> 58 [ ];
 
-91 -> 92 [ headport=n, tailport=s, weight=1000];
+31 -> 59 [ ];
 
-92 -> 93 [ headport=n, tailport=s, weight=1000];
+33 -> 61 [ ];
 
-93 -> 94 [ headport=n, tailport=s, weight=1000];
+31 -> 63 [ ];
 
-94 -> 95 [ headport=n, tailport=s, weight=1000];
+29 -> 64 [ ];
 
-95 -> 96 [ headport=n, tailport=s, weight=1000];
+6 -> 65 [ ];
 
-96 -> 97 [ headport=n, tailport=s, weight=1000];
+3 -> 39 [ color=blue];
 
-97 -> 98 [ headport=n, tailport=s, weight=1000];
+34 -> 60 [ color=blue];
 
-98 -> 99 [ headport=n, tailport=s, weight=1000];
+36 -> 62 [ color=blue];
 
-99 -> 100 [ headport=n, tailport=s, weight=1000];
+56 -> 62 [ headport=e, tailport=e, color=red, weight=0];
 
-100 -> 101 [ headport=n, tailport=s, weight=1000];
+56 -> 62 [ headport=e, tailport=e, color=green, weight=0];
 
-101 -> 102 [ headport=n, tailport=s, weight=1000];
+47 -> 60 [ headport=w, tailport=w, color=orange, weight=0];
 
-102 -> 103 [ headport=n, tailport=s, weight=1000];
+56 -> 62 [ headport=w, tailport=w, color=orange, weight=0];
 
-103 -> 104 [ headport=n, tailport=s, weight=1000];
+66 -> 6 [ ];
 
-104 -> 105 [ headport=n, tailport=s, weight=1000];
+70 -> 47 [ ];
 
-105 -> 106 [ headport=n, tailport=s, weight=1000];
+71 -> 17 [ ];
 
-106 -> 107 [ headport=n, tailport=s, weight=1000];
+72 -> 56 [ ];
 
-107 -> 108 [ headport=n, tailport=s, weight=1000];
+73 -> 60 [ ];
 
-108 -> 109 [ headport=n, tailport=s, weight=1000];
-
-109 -> 110 [ headport=n, tailport=s, weight=1000];
-
-110 -> 111 [ headport=n, tailport=s, weight=1000];
-
-111 -> 112 [ headport=n, tailport=s, weight=1000];
-
-112 -> 113 [ headport=n, tailport=s, weight=1000];
-
-113 -> 114 [ headport=n, tailport=s, weight=1000];
-
-114 -> 115 [ headport=n, tailport=s, weight=1000];
-
-115 -> 116 [ headport=n, tailport=s, weight=1000];
-
-116 -> 117 [ headport=n, tailport=s, weight=1000];
-
-117 -> 118 [ headport=n, tailport=s, weight=1000];
-
-118 -> 119 [ headport=n, tailport=s, weight=1000];
-
-119 -> 120 [ headport=n, tailport=s, weight=1000];
-
-120 -> 121 [ headport=n, tailport=s, weight=1000];
-
-121 -> 122 [ headport=n, tailport=s, weight=1000];
-
-122 -> 123 [ headport=n, tailport=s, weight=1000];
-
-123 -> 124 [ headport=n, tailport=s, weight=1000];
-
-124 -> 125 [ headport=n, tailport=s, weight=1000];
-
-125 -> 126 [ headport=n, tailport=s, weight=1000];
-
-126 -> 127 [ headport=n, tailport=s, weight=1000];
-
-127 -> 128 [ headport=n, tailport=s, weight=1000];
-
-128 -> 129 [ headport=n, tailport=s, weight=1000];
-
-16 -> 86 [ color=blue];
-
-51 -> 114 [ color=blue];
-
-2 -> 74 [ ];
-
-2 -> 76 [ ];
-
-8 -> 77 [ ];
-
-6 -> 78 [ ];
-
-6 -> 79 [ color=blue];
-
-6 -> 80 [ ];
-
-12 -> 81 [ ];
-
-14 -> 82 [ ];
-
-10 -> 83 [ color=blue];
-
-10 -> 84 [ ];
-
-20 -> 85 [ ];
-
-10 -> 87 [ ];
-
-22 -> 88 [ ];
-
-24 -> 89 [ ];
-
-40 -> 91 [ ];
-
-40 -> 92 [ color=blue];
-
-38 -> 93 [ ];
-
-38 -> 94 [ color=blue];
-
-36 -> 95 [ ];
-
-36 -> 96 [ color=blue];
-
-34 -> 97 [ ];
-
-34 -> 98 [ color=blue];
-
-32 -> 99 [ ];
-
-32 -> 100 [ ];
-
-30 -> 101 [ ];
-
-30 -> 102 [ color=blue];
-
-28 -> 103 [ ];
-
-28 -> 104 [ ];
-
-26 -> 105 [ ];
-
-24 -> 107 [ ];
-
-22 -> 108 [ ];
-
-47 -> 109 [ ];
-
-49 -> 110 [ ];
-
-45 -> 111 [ color=blue];
-
-45 -> 112 [ ];
-
-55 -> 113 [ ];
-
-45 -> 115 [ ];
-
-57 -> 116 [ ];
-
-59 -> 117 [ ];
-
-63 -> 119 [ ];
-
-63 -> 121 [ ];
-
-61 -> 122 [ ];
-
-69 -> 124 [ ];
-
-69 -> 126 [ ];
-
-59 -> 127 [ ];
-
-57 -> 128 [ ];
-
-6 -> 129 [ ];
-
-3 -> 75 [ color=blue];
-
-41 -> 90 [ color=blue];
-
-43 -> 106 [ color=blue];
-
-64 -> 118 [ color=blue];
-
-66 -> 120 [ color=blue];
-
-70 -> 123 [ color=blue];
-
-72 -> 125 [ color=blue];
-
-86 -> 106 [ headport=e, tailport=e, color=red, weight=0];
-
-86 -> 106 [ headport=e, tailport=e, color=green, weight=0];
-
-114 -> 120 [ headport=e, tailport=e, color=red, weight=0];
-
-114 -> 120 [ headport=e, tailport=e, color=green, weight=0];
-
-114 -> 125 [ headport=e, tailport=e, color=red, weight=0];
-
-120 -> 125 [ headport=e, tailport=e, color=green, weight=0];
-
-86 -> 106 [ headport=w, tailport=w, color=orange, weight=0];
-
-114 -> 120 [ headport=w, tailport=w, color=orange, weight=0];
-
-120 -> 125 [ headport=w, tailport=w, color=orange, weight=0];
-
-120 -> 86 [ headport=w, tailport=w, color=yellow, weight=0];
-
-125 -> 86 [ headport=w, tailport=w, color=yellow, weight=0];
-
-130 -> 6 [ ];
-
-134 -> 10 [ ];
-
-135 -> 86 [ ];
-
-136 -> 28 [ ];
-
-137 -> 30 [ ];
-
-138 -> 32 [ ];
-
-139 -> 34 [ ];
-
-140 -> 36 [ ];
-
-141 -> 38 [ ];
-
-142 -> 40 [ ];
-
-143 -> 90 [ ];
-
-144 -> 106 [ ];
-
-145 -> 45 [ ];
-
-146 -> 114 [ ];
-
-147 -> 63 [ ];
-
-148 -> 118 [ ];
-
-149 -> 120 [ ];
-
-150 -> 69 [ ];
-
-151 -> 123 [ ];
-
-152 -> 125 [ ];
+74 -> 62 [ ];
 
 }

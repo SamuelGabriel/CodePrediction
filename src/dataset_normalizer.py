@@ -1,11 +1,27 @@
 from language_model.graph_pb2 import Graph, FeatureNode, FeatureEdge
 import argparse
-from typing import Iterable, Tuple, Callable, Generator, Optional, List, Any, Dict
+from typing import Iterable, Tuple, Callable, Generator, Optional, List, Any, Dict, Set
 import random
 import networkx as nx
+from enum import Enum
+from glob import glob
+from os.path import relpath, join, dirname
+import os
+from tqdm import tqdm
 
 random.seed(2019)
 
+parser = argparse.ArgumentParser()
+parser.add_argument("--source-path")
+parser.add_argument("--target-path")
+args = parser.parse_args()
+
+class IdTypes(Enum):
+    LocalVariable = 1
+    Class = 2
+    Parameter = 3
+    Argument = 4
+    Function = 5
 
 def read_graph(file_path: str) -> Tuple[Graph, nx.DiGraph, Callable, Callable]:
     """
@@ -31,9 +47,9 @@ def read_graph(file_path: str) -> Tuple[Graph, nx.DiGraph, Callable, Callable]:
         return G, g, change_node_contents, change_node_type
 
 
-def write_graph(file_path: str, graph: Graph):
+def write_graph(file_path: str, g: Graph):
     with open(file_path, 'wb') as f:
-        f.write(graph.SerializeToString())
+        f.write(g.SerializeToString())
 
 def invert_dict(d: dict) -> Dict[Any, List[Any]]:
     inv_map = {} # type: Dict[Any, List[Any]]
@@ -64,13 +80,32 @@ def has_ancestor_in(G: nx.DiGraph, n: int, s: set):
             return True
     return False
 
-def is_newly_defined_variable(G: nx.DiGraph, usages: set):
+def type_of_newly_defined_variable(G: nx.DiGraph, usages: set):
     H = G.copy()
     remove_edges_with_property(H, lambda e: G.edges[e]['data'].type not in {FeatureEdge.ASSOCIATED_TOKEN})
     for n in usages:
-        if has_ancestor_in(H, n, {'VARIABLE', 'METHOD', 'CLASS'}):
-            return True
-    return False
+        if has_ancestor_in(H, n, {'VARIABLE'}):
+            H = G.copy()
+            remove_edges_with_property(H, lambda e: G.edges[e]['data'].type not in {FeatureEdge.ASSOCIATED_TOKEN, FeatureEdge.AST_CHILD})
+            if has_ancestor_in(H, n, {'PARAMETERS'}):
+                return IdTypes.Argument
+            elif has_ancestor_in(H, n, {'METHOD'}):
+                return IdTypes.LocalVariable
+            else:
+                var_node = get_ancestor_with_edge(G, n, FeatureEdge.ASSOCIATED_TOKEN)
+                if var_node:
+                    var_par = get_ancestor_with_edge(G, var_node, FeatureEdge.AST_CHILD)
+                    if var_par:
+                        members = G.nodes[var_par]['data']
+                        if members.contents == 'MEMBERS':
+                            return IdTypes.Parameter
+                raise ValueError('Could not map VARIABEL type id to any IdType')
+            
+        if has_ancestor_in(H, n, {'METHOD'}):
+            return IdTypes.Function
+        if has_ancestor_in(H, n, {'CLASS'}):
+            return IdTypes.Class
+    return None
 
 def get_ancestor_with_edge(G: nx.DiGraph, n: int, etype: FeatureEdge) -> Optional[int]:
     i_e = G.in_edges(n)
@@ -79,8 +114,6 @@ def get_ancestor_with_edge(G: nx.DiGraph, n: int, etype: FeatureEdge) -> Optiona
             return e[0]
     return None
 
-#TODO Take care of references to imports... -> An idea might be to go over the difference in the content of the symbol cell
-#TODO I should not remove TOKENS as IDS otherwise the filters would not work anymore...
 def remove_all_import_package_ids(G: nx.DiGraph):
     anc_set = {'IMPORT', 'IMPORTS', 'PACKAGE', 'PACKAGE_NAME'}
     remove_nodes_with_property(G,
@@ -136,9 +169,39 @@ def find_id_groups(G: nx.DiGraph) -> Generator:
     flat_comps = [e for s in comps for e in s]
     assert(len(flat_comps) == len(set(flat_comps)))
     # validate all comps are valid: have one variable dependent
-    return (c for c in comps if is_newly_defined_variable(G, set(c)))
+    for c in comps:
+        t = type_of_newly_defined_variable(G, set(c))
+        if t:
+            yield c, t
 
-
+def change_graph(G: nx.DiGraph, change_name: Callable):
+    groups = find_id_groups(G)
+    given_names = set() # type: Set[str]
+    for group, t in groups:
+        def propose_name():
+            return t.name+'{:02d}'.format(random.randint(1,999))
+        proposed_name = propose_name()
+        try_counter = 0
+        while proposed_name in given_names:
+            proposed_name = proposed_name()
+            try_counter += 1
+            if try_counter > 1000:
+                raise ValueError('To small number range for current file')
+        given_names.add(proposed_name)
+        for i in group:
+            change_name(i, proposed_name)
 
 if __name__ == '__main__':
-    G, g, change_name, change_type = read_graph('../Test.java.proto')
+    target_dir = args.target_path
+    source_dir = args.source_path
+    in_files = glob(source_dir+'/**/*.proto', recursive=True)
+    out_files = []
+    for in_file in in_files:
+        relative_path = relpath(in_file, source_dir)
+        out_file = join(target_dir, relative_path)
+        os.makedirs(dirname(out_file), exist_ok=True)
+        out_files.append(out_file)
+    for in_file, out_file in tqdm(zip(in_files, out_files), total=len(in_files)):
+        G, g, change_name, change_type = read_graph(in_file)
+        change_graph(G, change_name)
+        write_graph(out_file, g)
