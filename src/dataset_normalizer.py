@@ -8,6 +8,7 @@ from glob import glob
 from os.path import relpath, join, dirname
 import os
 from tqdm import tqdm
+from multiprocessing import Pool
 
 random.seed(2019)
 
@@ -191,6 +192,12 @@ def change_graph(G: nx.DiGraph, change_name: Callable):
         for i in group:
             change_name(i, proposed_name)
 
+def load_edit_save(in_n_out):
+    in_file, out_file = in_n_out
+    G, g, change_name, change_type = read_graph(in_file)
+    change_graph(G, change_name)
+    write_graph(out_file, g)
+
 if __name__ == '__main__':
     target_dir = args.target_path
     source_dir = args.source_path
@@ -201,7 +208,6 @@ if __name__ == '__main__':
         out_file = join(target_dir, relative_path)
         os.makedirs(dirname(out_file), exist_ok=True)
         out_files.append(out_file)
-    for in_file, out_file in tqdm(zip(in_files, out_files), total=len(in_files)):
-        G, g, change_name, change_type = read_graph(in_file)
-        change_graph(G, change_name)
-        write_graph(out_file, g)
+    pool = Pool(4)
+    for _ in tqdm(pool.imap_unordered(load_edit_save, zip(in_files, out_files)), total=len(in_files)):
+        pass
