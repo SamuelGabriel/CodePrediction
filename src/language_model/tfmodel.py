@@ -27,7 +27,7 @@ class ModelBase(object):
         self._initial_state = cell.zero_state(batch_size, tf.float32)
 
         with tf.device('/cpu:0'):
-            self._embedding = embedding = tf.get_variable("embedding", [vocab_size, size])
+            self._embedding = embedding = tf.get_variable("embedding", [vocab_size, size], trainable=True)
 
             inputs = tf.gather(embedding, input_data)
 
@@ -136,7 +136,8 @@ class BasicModel(ModelBase):
         labels = tf.reshape(self.targets, [self.batch_size * self.seq_length, 1])
         loss = tf.nn.sampled_softmax_loss(weights=tf.transpose(softmax_w), biases=softmax_b,labels=labels, inputs=output, num_sampled=self.config.num_samples, num_classes=self.vocab_size) \
             if self.config.num_samples > 0 else \
-            tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=tf.reshape(self.targets, [-1]))
+            tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self._logits, labels=tf.reshape(self.targets, [-1]))
+            #isn't logits here the right thing!? But in source it is self._logits
 
         return logits, predict, loss, state
 
