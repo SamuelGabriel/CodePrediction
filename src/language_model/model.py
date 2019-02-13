@@ -70,6 +70,7 @@ class Model(object):
                 'batch_size': 30,
                 'max_epochs': 10,
                 'patience': 5,
+                'mini_updates': False,
                }
 
     def __init__(self,
@@ -361,13 +362,14 @@ class Model(object):
         data_generator = self.__split_data_into_minibatches(data, epoch_number, is_train=is_train)
         epoch_start = time.time()
         for minibatch_counter, (samples_in_batch, batch_data_dict) in enumerate(data_generator):
-            print("%s: Batch %5i. Processed %i/%i samples. Loss so far: %.4f.  Acc. so far: %.2f%%  "
-                    % (epoch_name, minibatch_counter,
-                       num_samples_so_far, num_total_samples,
-                       epoch_loss / max(num_samples_so_far, 1),
-                       epoch_correct_predictions / max(epoch_total_tokens, 1) * 100),
-                    flush=True,
-                    end="\r")
+            if self.hyperparameters['mini_updates']:
+                print("%s: Batch %5i. Processed %i/%i samples. Loss so far: %.4f.  Acc. so far: %.2f%%  "
+                        % (epoch_name, minibatch_counter,
+                        num_samples_so_far, num_total_samples,
+                        epoch_loss / max(num_samples_so_far, 1),
+                        epoch_correct_predictions / max(epoch_total_tokens, 1) * 100),
+                        flush=True,
+                        end="\r")
             ops_to_run = {'loss': self.__ops['loss']}
             if is_train:
                 ops_to_run['train_step'] = self.__ops['train_step']
