@@ -9,7 +9,7 @@ from os.path import relpath, join, dirname
 import os
 from tqdm import tqdm
 from multiprocessing import Pool
-from collections import deque
+from collections import deque, defaultdict
 
 random.seed(2019)
 
@@ -89,10 +89,13 @@ def type_of_newly_defined_variable(G: nx.DiGraph, usages: set):
     for n in usages:
         anc_contents = has_ancestor_in(G, n, {'VARIABLE', 'METHOD', 'CLASS'}, edges_to_use={FeatureEdge.ASSOCIATED_TOKEN})
         if anc_contents == 'VARIABLE':
-            anc_contents = has_ancestor_in(G, n, {'PARAMETERS', 'METHOD'})
+            anc_contents = has_ancestor_in(G, n, {'PARAMETERS', 'BLOCK', 'BODY', 'ANNOTATION'})
             if anc_contents == 'PARAMETERS':
                 return IdTypes.Argument
-            elif anc_contents == 'METHOD':
+            elif anc_contents == 'ANNOTATION':
+                # Argument names in annotation are somehow handled as variables by the engine..
+                return None
+            elif anc_contents:
                 return IdTypes.LocalVariable
             else:
                 var_node = get_ancestor_with_edge(G, n, FeatureEdge.ASSOCIATED_TOKEN)
@@ -102,7 +105,7 @@ def type_of_newly_defined_variable(G: nx.DiGraph, usages: set):
                         members = G.nodes[var_par]['data']
                         if members.contents == 'MEMBERS':
                             return IdTypes.Parameter
-                raise ValueError('Could not map VARIABEL type id to any IdType')
+                raise ValueError('Could not map VARIABLE type id to any IdType for: ' + str(G.nodes[n]['data']))
             
         elif anc_contents == 'METHOD':
             return IdTypes.Function
@@ -172,16 +175,13 @@ def find_id_groups(G: nx.DiGraph) -> Generator:
 def change_graph(G: nx.DiGraph, change_name: Callable):
     groups = find_id_groups(G)
     given_names = set() # type: Set[str]
+    left_ids = defaultdict(lambda: list(range(1,1000))) # type: Dict[str, List[int]]
     for group, t in groups:
-        def propose_name():
-            return t.name+'{:02d}'.format(random.randint(1,999))
-        proposed_name = propose_name()
-        try_counter = 0
-        while proposed_name in given_names:
-            proposed_name = propose_name()
-            try_counter += 1
-            if try_counter > 1000:
-                raise ValueError('To small number range for current file')
+        if len(left_ids[t.name]) == 0:
+            raise ValueError('To small number range for current file')
+        next_index = random.randint(0, len(left_ids[t.name])-1)
+        proposed_name = t.name+'{:02d}'.format(left_ids[t.name][next_index])
+        del left_ids[t.name][next_index]
         given_names.add(proposed_name)
         for i in group:
             change_name(i, proposed_name)

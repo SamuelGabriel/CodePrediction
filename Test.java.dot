@@ -21,130 +21,120 @@ digraph {
  }
  subgraph {
   rank=same;
-7 [ label="MODIFIERS" ];
-
 9 [ label="MEMBERS" ];
+
+7 [ label="MODIFIERS" ];
 
 3 [ label="PACKAGE_NAME" ];
 
  }
  subgraph {
   rank=same;
+19 [ label="METHOD" ];
+
+10 [ label="BLOCK" ];
+
 8 [ label="MODIFIERS" ];
 
-17 [ label="METHOD" ];
+ }
+ subgraph {
+  rank=same;
+22 [ label="RETURN_TYPE" ];
 
-10 [ label="VARIABLE" ];
+20 [ label="MODIFIERS" ];
+
+24 [ label="PARAMETERS" ];
+
+30 [ label="BODY" ];
+
+11 [ label="STATEMENTS" ];
 
  }
  subgraph {
   rank=same;
-22 [ label="PARAMETERS" ];
+23 [ label="PRIMITIVE_TYPE" ];
 
-18 [ label="MODIFIERS" ];
+21 [ label="MODIFIERS" ];
 
-28 [ label="BODY" ];
+25 [ label="VARIABLE" ];
 
-20 [ label="RETURN_TYPE" ];
+31 [ label="BLOCK" ];
 
-15 [ label="INITIALIZER" ];
-
-13 [ label="TYPE" ];
-
-11 [ label="MODIFIERS" ];
+12 [ label="VARIABLE" ];
 
  }
  subgraph {
   rank=same;
-23 [ label="VARIABLE" ];
+28 [ label="TYPE" ];
 
-19 [ label="MODIFIERS" ];
+32 [ label="STATEMENTS" ];
 
-29 [ label="BLOCK" ];
+15 [ label="TYPE" ];
 
-21 [ label="PRIMITIVE_TYPE" ];
-
-16 [ label="INT_LITERAL" ];
-
-14 [ label="PRIMITIVE_TYPE" ];
-
-12 [ label="MODIFIERS" ];
+17 [ label="INITIALIZER" ];
 
  }
  subgraph {
   rank=same;
-26 [ label="TYPE" ];
+29 [ label="PRIMITIVE_TYPE" ];
 
-30 [ label="STATEMENTS" ];
+33 [ label="RETURN" ];
 
- }
- subgraph {
-  rank=same;
-27 [ label="PRIMITIVE_TYPE" ];
+16 [ label="PRIMITIVE_TYPE" ];
 
-31 [ label="RETURN" ];
+18 [ label="INT_LITERAL" ];
 
  }
  subgraph {
   rank=same;
-32 [ label="EXPRESSION" ];
-
- }
- subgraph {
-  rank=same;
-33 [ label="PLUS" ];
-
- }
- subgraph {
-  rank=same;
-36 [ label="RIGHT_OPERAND" ];
-
-34 [ label="LEFT_OPERAND" ];
+34 [ label="EXPRESSION" ];
 
  }
  subgraph {
  }
  subgraph {
-66 [ label="hdfs.Test" ];
+64 [ label="hdfs.Test" ];
 
-70 [ label="a" ];
+68 [ label="a" ];
 
-71 [ label="pa(int)" ];
+69 [ label="pa(int)" ];
 
-72 [ label="b" ];
+70 [ label="b" ];
 
-73 [ label="a" ];
-
-74 [ label="b" ];
+71 [ label="b" ];
 
  }
  subgraph {
   rank=max;
-38 [ label="PACKAGE" ];
+36 [ label="PACKAGE" ];
 
-39 [ label="hdfs" , color=blue];
+37 [ label="hdfs" , color=blue];
 
-40 [ label="SEMI" ];
+38 [ label="SEMI" ];
 
-41 [ label="PUBLIC" ];
+39 [ label="PUBLIC" ];
 
-42 [ label="CLASS" ];
+40 [ label="CLASS" ];
 
-43 [ label="Test" , color=blue];
+41 [ label="Test" , color=blue];
+
+42 [ label="LBRACE" ];
+
+43 [ label="STATIC" ];
 
 44 [ label="LBRACE" ];
 
-45 [ label="PUBLIC" ];
+45 [ label="int" ];
 
-46 [ label="int" ];
+46 [ label="a" , color=blue];
 
-47 [ label="a" , color=blue];
+47 [ label="EQ" ];
 
-48 [ label="EQ" ];
+48 [ label="1" ];
 
-49 [ label="1" ];
+49 [ label="SEMI" ];
 
-50 [ label="SEMI" ];
+50 [ label="RBRACE" ];
 
 51 [ label="PUBLIC" ];
 
@@ -164,17 +154,13 @@ digraph {
 
 59 [ label="RETURN" ];
 
-60 [ label="a" , color=blue];
+60 [ label="b" , color=blue];
 
-61 [ label="PLUS" ];
+61 [ label="SEMI" ];
 
-62 [ label="b" , color=blue];
+62 [ label="RBRACE" ];
 
-63 [ label="SEMI" ];
-
-64 [ label="RBRACE" ];
-
-65 [ label="RBRACE" ];
+63 [ label="RBRACE" ];
 
  }
 0 -> 1 [ headport=w, tailport=e];
@@ -199,37 +185,33 @@ digraph {
 
 11 -> 12 [ headport=w, tailport=e];
 
-10 -> 13 [ headport=w, tailport=e];
-
-13 -> 14 [ headport=w, tailport=e];
-
-10 -> 15 [ headport=w, tailport=e];
+12 -> 15 [ headport=w, tailport=e];
 
 15 -> 16 [ headport=w, tailport=e];
 
-9 -> 17 [ headport=w, tailport=e];
+12 -> 17 [ headport=w, tailport=e];
 
 17 -> 18 [ headport=w, tailport=e];
 
-18 -> 19 [ headport=w, tailport=e];
+9 -> 19 [ headport=w, tailport=e];
 
-17 -> 20 [ headport=w, tailport=e];
+19 -> 20 [ headport=w, tailport=e];
 
 20 -> 21 [ headport=w, tailport=e];
 
-17 -> 22 [ headport=w, tailport=e];
+19 -> 22 [ headport=w, tailport=e];
 
 22 -> 23 [ headport=w, tailport=e];
 
-23 -> 26 [ headport=w, tailport=e];
+19 -> 24 [ headport=w, tailport=e];
 
-26 -> 27 [ headport=w, tailport=e];
+24 -> 25 [ headport=w, tailport=e];
 
-17 -> 28 [ headport=w, tailport=e];
+25 -> 28 [ headport=w, tailport=e];
 
 28 -> 29 [ headport=w, tailport=e];
 
-29 -> 30 [ headport=w, tailport=e];
+19 -> 30 [ headport=w, tailport=e];
 
 30 -> 31 [ headport=w, tailport=e];
 
@@ -239,7 +221,9 @@ digraph {
 
 33 -> 34 [ headport=w, tailport=e];
 
-33 -> 36 [ headport=w, tailport=e];
+36 -> 37 [ headport=n, tailport=s, weight=1000];
+
+37 -> 38 [ headport=n, tailport=s, weight=1000];
 
 38 -> 39 [ headport=n, tailport=s, weight=1000];
 
@@ -291,84 +275,76 @@ digraph {
 
 62 -> 63 [ headport=n, tailport=s, weight=1000];
 
-63 -> 64 [ headport=n, tailport=s, weight=1000];
+12 -> 46 [ color=blue];
 
-64 -> 65 [ headport=n, tailport=s, weight=1000];
+25 -> 56 [ color=blue];
 
-10 -> 47 [ color=blue];
-
-23 -> 56 [ color=blue];
+2 -> 36 [ ];
 
 2 -> 38 [ ];
 
-2 -> 40 [ ];
+8 -> 39 [ ];
 
-8 -> 41 [ ];
+6 -> 40 [ ];
+
+6 -> 41 [ color=blue];
 
 6 -> 42 [ ];
 
-6 -> 43 [ color=blue];
+10 -> 43 [ ];
 
-6 -> 44 [ ];
+10 -> 44 [ ];
 
-12 -> 45 [ ];
+16 -> 45 [ ];
 
-14 -> 46 [ ];
+12 -> 47 [ ];
 
-10 -> 48 [ ];
+18 -> 48 [ ];
 
-16 -> 49 [ ];
+12 -> 49 [ ];
 
 10 -> 50 [ ];
 
-19 -> 51 [ ];
+21 -> 51 [ ];
 
-21 -> 52 [ ];
+23 -> 52 [ ];
 
-17 -> 53 [ color=blue];
+19 -> 53 [ color=blue];
 
-17 -> 54 [ ];
+19 -> 54 [ ];
 
-27 -> 55 [ ];
+29 -> 55 [ ];
 
-17 -> 57 [ ];
+19 -> 57 [ ];
 
-29 -> 58 [ ];
+31 -> 58 [ ];
 
-31 -> 59 [ ];
+33 -> 59 [ ];
 
 33 -> 61 [ ];
 
-31 -> 63 [ ];
+31 -> 62 [ ];
 
-29 -> 64 [ ];
+6 -> 63 [ ];
 
-6 -> 65 [ ];
-
-3 -> 39 [ color=blue];
+3 -> 37 [ color=blue];
 
 34 -> 60 [ color=blue];
 
-36 -> 62 [ color=blue];
+56 -> 60 [ headport=e, tailport=e, color=red, weight=0];
 
-56 -> 62 [ headport=e, tailport=e, color=red, weight=0];
+56 -> 60 [ headport=e, tailport=e, color=green, weight=0];
 
-56 -> 62 [ headport=e, tailport=e, color=green, weight=0];
+56 -> 60 [ headport=w, tailport=w, color=orange, weight=0];
 
-47 -> 60 [ headport=w, tailport=w, color=orange, weight=0];
+64 -> 6 [ ];
 
-56 -> 62 [ headport=w, tailport=w, color=orange, weight=0];
+68 -> 46 [ ];
 
-66 -> 6 [ ];
+69 -> 19 [ ];
 
-70 -> 47 [ ];
+70 -> 56 [ ];
 
-71 -> 17 [ ];
-
-72 -> 56 [ ];
-
-73 -> 60 [ ];
-
-74 -> 62 [ ];
+71 -> 60 [ ];
 
 }
