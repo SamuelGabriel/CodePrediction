@@ -7,160 +7,294 @@ digraph {
  }
  subgraph {
   rank=same;
-5 [ label="TYPE_DECLS" ];
-
 1 [ label="PACKAGE" ];
 
+15 [ label="TYPE_DECLS" ];
+
+5 [ label="IMPORTS" ];
+
  }
  subgraph {
   rank=same;
-6 [ label="CLASS" ];
-
 2 [ label="PACKAGE" ];
 
+16 [ label="CLASS" ];
+
+6 [ label="IMPORT" ];
+
  }
  subgraph {
   rank=same;
-9 [ label="MEMBERS" ];
-
-7 [ label="MODIFIERS" ];
-
 3 [ label="PACKAGE_NAME" ];
 
- }
- subgraph {
-  rank=same;
-19 [ label="METHOD" ];
+17 [ label="MODIFIERS" ];
 
-10 [ label="BLOCK" ];
+19 [ label="MEMBERS" ];
 
-8 [ label="MODIFIERS" ];
+7 [ label="QUALIFIED_IDENTIFIER" ];
 
  }
  subgraph {
   rank=same;
-22 [ label="RETURN_TYPE" ];
+18 [ label="MODIFIERS" ];
 
-20 [ label="MODIFIERS" ];
+20 [ label="VARIABLE" ];
 
-24 [ label="PARAMETERS" ];
+27 [ label="METHOD" ];
 
-30 [ label="BODY" ];
-
-11 [ label="STATEMENTS" ];
+8 [ label="MEMBER_SELECT" ];
 
  }
  subgraph {
   rank=same;
-23 [ label="PRIMITIVE_TYPE" ];
-
 21 [ label="MODIFIERS" ];
 
-25 [ label="VARIABLE" ];
+23 [ label="TYPE" ];
 
-31 [ label="BLOCK" ];
+25 [ label="INITIALIZER" ];
 
-12 [ label="VARIABLE" ];
+32 [ label="PARAMETERS" ];
 
- }
- subgraph {
-  rank=same;
-28 [ label="TYPE" ];
+38 [ label="BODY" ];
 
-32 [ label="STATEMENTS" ];
+30 [ label="RETURN_TYPE" ];
 
-15 [ label="TYPE" ];
+28 [ label="MODIFIERS" ];
 
-17 [ label="INITIALIZER" ];
+9 [ label="EXPRESSION" ];
 
  }
  subgraph {
   rank=same;
-29 [ label="PRIMITIVE_TYPE" ];
+22 [ label="MODIFIERS" ];
 
-33 [ label="RETURN" ];
+24 [ label="PRIMITIVE_TYPE" ];
 
-16 [ label="PRIMITIVE_TYPE" ];
+26 [ label="INT_LITERAL" ];
 
-18 [ label="INT_LITERAL" ];
+33 [ label="VARIABLE" ];
+
+39 [ label="BLOCK" ];
+
+31 [ label="PRIMITIVE_TYPE" ];
+
+29 [ label="MODIFIERS" ];
+
+10 [ label="MEMBER_SELECT" ];
 
  }
  subgraph {
   rank=same;
-34 [ label="EXPRESSION" ];
+36 [ label="TYPE" ];
+
+40 [ label="STATEMENTS" ];
+
+11 [ label="EXPRESSION" ];
+
+ }
+ subgraph {
+  rank=same;
+37 [ label="PRIMITIVE_TYPE" ];
+
+41 [ label="RETURN" ];
+
+12 [ label="MEMBER_SELECT" ];
+
+ }
+ subgraph {
+  rank=same;
+42 [ label="EXPRESSION" ];
+
+13 [ label="EXPRESSION" ];
+
+ }
+ subgraph {
+  rank=same;
+43 [ label="PLUS" ];
+
+ }
+ subgraph {
+  rank=same;
+50 [ label="RIGHT_OPERAND" ];
+
+44 [ label="LEFT_OPERAND" ];
+
+ }
+ subgraph {
+  rank=same;
+51 [ label="METHOD_INVOCATION" ];
+
+45 [ label="PLUS" ];
+
+ }
+ subgraph {
+  rank=same;
+52 [ label="METHOD_SELECT" ];
+
+46 [ label="LEFT_OPERAND" ];
+
+48 [ label="RIGHT_OPERAND" ];
+
+ }
+ subgraph {
+  rank=same;
+53 [ label="MEMBER_SELECT" ];
+
+ }
+ subgraph {
+  rank=same;
+54 [ label="EXPRESSION" ];
+
+ }
+ subgraph {
+  rank=same;
+55 [ label="METHOD_INVOCATION" ];
+
+ }
+ subgraph {
+  rank=same;
+56 [ label="METHOD_SELECT" ];
+
+ }
+ subgraph {
+  rank=same;
+57 [ label="MEMBER_SELECT" ];
+
+ }
+ subgraph {
+  rank=same;
+58 [ label="EXPRESSION" ];
 
  }
  subgraph {
  }
  subgraph {
-64 [ label="hdfs.Test" ];
+107 [ label="java.util.concurrent.ThreadLocalRandom" ];
 
-68 [ label="a" ];
+108 [ label="java.util.concurrent" ];
 
-69 [ label="pa(int)" ];
+109 [ label="java.util" ];
 
-70 [ label="b" ];
+110 [ label="java" ];
 
-71 [ label="b" ];
+111 [ label="hdfs.Test" ];
+
+115 [ label="a" ];
+
+116 [ label="plus_random_and_a(int)" ];
+
+117 [ label="b" ];
+
+118 [ label="a" ];
+
+119 [ label="b" ];
+
+120 [ label="nextInt()" ];
+
+121 [ label="nextInt()" ];
+
+122 [ label="current()" ];
+
+123 [ label="current()" ];
+
+124 [ label="java.util.concurrent.ThreadLocalRandom" ];
 
  }
  subgraph {
   rank=max;
-36 [ label="PACKAGE" ];
+60 [ label="PACKAGE" ];
 
-37 [ label="hdfs" , color=blue];
+61 [ label="hdfs" , color=blue];
 
-38 [ label="SEMI" ];
+62 [ label="SEMI" ];
 
-39 [ label="PUBLIC" ];
+63 [ label="IMPORT" ];
 
-40 [ label="CLASS" ];
+64 [ label="java" , color=blue];
 
-41 [ label="Test" , color=blue];
+65 [ label="DOT" ];
 
-42 [ label="LBRACE" ];
+66 [ label="util" , color=blue];
 
-43 [ label="STATIC" ];
+67 [ label="DOT" ];
 
-44 [ label="LBRACE" ];
+68 [ label="concurrent" , color=blue];
 
-45 [ label="int" ];
+69 [ label="DOT" ];
 
-46 [ label="a" , color=blue];
+70 [ label="ThreadLocalRandom" , color=blue];
 
-47 [ label="EQ" ];
+71 [ label="SEMI" ];
 
-48 [ label="1" ];
+72 [ label="PUBLIC" ];
 
-49 [ label="SEMI" ];
+73 [ label="CLASS" ];
 
-50 [ label="RBRACE" ];
+74 [ label="Test" , color=blue];
 
-51 [ label="PUBLIC" ];
+75 [ label="LBRACE" ];
 
-52 [ label="int" ];
+76 [ label="PUBLIC" ];
 
-53 [ label="pa" , color=blue];
+77 [ label="int" ];
 
-54 [ label="LPAREN" ];
+78 [ label="a" , color=blue];
 
-55 [ label="int" ];
+79 [ label="EQ" ];
 
-56 [ label="b" , color=blue];
+80 [ label="1" ];
 
-57 [ label="RPAREN" ];
+81 [ label="SEMI" ];
 
-58 [ label="LBRACE" ];
+82 [ label="PUBLIC" ];
 
-59 [ label="RETURN" ];
+83 [ label="int" ];
 
-60 [ label="b" , color=blue];
+84 [ label="plus_random_and_a" , color=blue];
 
-61 [ label="SEMI" ];
+85 [ label="LPAREN" ];
 
-62 [ label="RBRACE" ];
+86 [ label="int" ];
 
-63 [ label="RBRACE" ];
+87 [ label="b" , color=blue];
+
+88 [ label="RPAREN" ];
+
+89 [ label="LBRACE" ];
+
+90 [ label="RETURN" ];
+
+91 [ label="a" , color=blue];
+
+92 [ label="PLUS" ];
+
+93 [ label="b" , color=blue];
+
+94 [ label="PLUS" ];
+
+95 [ label="ThreadLocalRandom" , color=blue];
+
+96 [ label="DOT" ];
+
+97 [ label="current" , color=blue];
+
+98 [ label="LPAREN" ];
+
+99 [ label="RPAREN" ];
+
+100 [ label="DOT" ];
+
+101 [ label="nextInt" , color=blue];
+
+102 [ label="LPAREN" ];
+
+103 [ label="RPAREN" ];
+
+104 [ label="SEMI" ];
+
+105 [ label="RBRACE" ];
+
+106 [ label="RBRACE" ];
 
  }
 0 -> 1 [ headport=w, tailport=e];
@@ -177,7 +311,7 @@ digraph {
 
 7 -> 8 [ headport=w, tailport=e];
 
-6 -> 9 [ headport=w, tailport=e];
+8 -> 9 [ headport=w, tailport=e];
 
 9 -> 10 [ headport=w, tailport=e];
 
@@ -185,89 +319,87 @@ digraph {
 
 11 -> 12 [ headport=w, tailport=e];
 
-12 -> 15 [ headport=w, tailport=e];
+12 -> 13 [ headport=w, tailport=e];
+
+0 -> 15 [ headport=w, tailport=e];
 
 15 -> 16 [ headport=w, tailport=e];
 
-12 -> 17 [ headport=w, tailport=e];
+16 -> 17 [ headport=w, tailport=e];
 
 17 -> 18 [ headport=w, tailport=e];
 
-9 -> 19 [ headport=w, tailport=e];
+16 -> 19 [ headport=w, tailport=e];
 
 19 -> 20 [ headport=w, tailport=e];
 
 20 -> 21 [ headport=w, tailport=e];
 
-19 -> 22 [ headport=w, tailport=e];
+21 -> 22 [ headport=w, tailport=e];
 
-22 -> 23 [ headport=w, tailport=e];
+20 -> 23 [ headport=w, tailport=e];
 
-19 -> 24 [ headport=w, tailport=e];
+23 -> 24 [ headport=w, tailport=e];
 
-24 -> 25 [ headport=w, tailport=e];
+20 -> 25 [ headport=w, tailport=e];
 
-25 -> 28 [ headport=w, tailport=e];
+25 -> 26 [ headport=w, tailport=e];
+
+19 -> 27 [ headport=w, tailport=e];
+
+27 -> 28 [ headport=w, tailport=e];
 
 28 -> 29 [ headport=w, tailport=e];
 
-19 -> 30 [ headport=w, tailport=e];
+27 -> 30 [ headport=w, tailport=e];
 
 30 -> 31 [ headport=w, tailport=e];
 
-31 -> 32 [ headport=w, tailport=e];
+27 -> 32 [ headport=w, tailport=e];
 
 32 -> 33 [ headport=w, tailport=e];
 
-33 -> 34 [ headport=w, tailport=e];
+33 -> 36 [ headport=w, tailport=e];
 
-36 -> 37 [ headport=n, tailport=s, weight=1000];
+36 -> 37 [ headport=w, tailport=e];
 
-37 -> 38 [ headport=n, tailport=s, weight=1000];
+27 -> 38 [ headport=w, tailport=e];
 
-38 -> 39 [ headport=n, tailport=s, weight=1000];
+38 -> 39 [ headport=w, tailport=e];
 
-39 -> 40 [ headport=n, tailport=s, weight=1000];
+39 -> 40 [ headport=w, tailport=e];
 
-40 -> 41 [ headport=n, tailport=s, weight=1000];
+40 -> 41 [ headport=w, tailport=e];
 
-41 -> 42 [ headport=n, tailport=s, weight=1000];
+41 -> 42 [ headport=w, tailport=e];
 
-42 -> 43 [ headport=n, tailport=s, weight=1000];
+42 -> 43 [ headport=w, tailport=e];
 
-43 -> 44 [ headport=n, tailport=s, weight=1000];
+43 -> 44 [ headport=w, tailport=e];
 
-44 -> 45 [ headport=n, tailport=s, weight=1000];
+44 -> 45 [ headport=w, tailport=e];
 
-45 -> 46 [ headport=n, tailport=s, weight=1000];
+45 -> 46 [ headport=w, tailport=e];
 
-46 -> 47 [ headport=n, tailport=s, weight=1000];
+45 -> 48 [ headport=w, tailport=e];
 
-47 -> 48 [ headport=n, tailport=s, weight=1000];
+43 -> 50 [ headport=w, tailport=e];
 
-48 -> 49 [ headport=n, tailport=s, weight=1000];
+50 -> 51 [ headport=w, tailport=e];
 
-49 -> 50 [ headport=n, tailport=s, weight=1000];
+51 -> 52 [ headport=w, tailport=e];
 
-50 -> 51 [ headport=n, tailport=s, weight=1000];
+52 -> 53 [ headport=w, tailport=e];
 
-51 -> 52 [ headport=n, tailport=s, weight=1000];
+53 -> 54 [ headport=w, tailport=e];
 
-52 -> 53 [ headport=n, tailport=s, weight=1000];
+54 -> 55 [ headport=w, tailport=e];
 
-53 -> 54 [ headport=n, tailport=s, weight=1000];
+55 -> 56 [ headport=w, tailport=e];
 
-54 -> 55 [ headport=n, tailport=s, weight=1000];
+56 -> 57 [ headport=w, tailport=e];
 
-55 -> 56 [ headport=n, tailport=s, weight=1000];
-
-56 -> 57 [ headport=n, tailport=s, weight=1000];
-
-57 -> 58 [ headport=n, tailport=s, weight=1000];
-
-58 -> 59 [ headport=n, tailport=s, weight=1000];
-
-59 -> 60 [ headport=n, tailport=s, weight=1000];
+57 -> 58 [ headport=w, tailport=e];
 
 60 -> 61 [ headport=n, tailport=s, weight=1000];
 
@@ -275,76 +407,222 @@ digraph {
 
 62 -> 63 [ headport=n, tailport=s, weight=1000];
 
-12 -> 46 [ color=blue];
+63 -> 64 [ headport=n, tailport=s, weight=1000];
 
-25 -> 56 [ color=blue];
+64 -> 65 [ headport=n, tailport=s, weight=1000];
 
-2 -> 36 [ ];
+65 -> 66 [ headport=n, tailport=s, weight=1000];
 
-2 -> 38 [ ];
+66 -> 67 [ headport=n, tailport=s, weight=1000];
 
-8 -> 39 [ ];
+67 -> 68 [ headport=n, tailport=s, weight=1000];
 
-6 -> 40 [ ];
+68 -> 69 [ headport=n, tailport=s, weight=1000];
 
-6 -> 41 [ color=blue];
+69 -> 70 [ headport=n, tailport=s, weight=1000];
 
-6 -> 42 [ ];
+70 -> 71 [ headport=n, tailport=s, weight=1000];
 
-10 -> 43 [ ];
+71 -> 72 [ headport=n, tailport=s, weight=1000];
 
-10 -> 44 [ ];
+72 -> 73 [ headport=n, tailport=s, weight=1000];
 
-16 -> 45 [ ];
+73 -> 74 [ headport=n, tailport=s, weight=1000];
 
-12 -> 47 [ ];
+74 -> 75 [ headport=n, tailport=s, weight=1000];
 
-18 -> 48 [ ];
+75 -> 76 [ headport=n, tailport=s, weight=1000];
 
-12 -> 49 [ ];
+76 -> 77 [ headport=n, tailport=s, weight=1000];
 
-10 -> 50 [ ];
+77 -> 78 [ headport=n, tailport=s, weight=1000];
 
-21 -> 51 [ ];
+78 -> 79 [ headport=n, tailport=s, weight=1000];
 
-23 -> 52 [ ];
+79 -> 80 [ headport=n, tailport=s, weight=1000];
 
-19 -> 53 [ color=blue];
+80 -> 81 [ headport=n, tailport=s, weight=1000];
 
-19 -> 54 [ ];
+81 -> 82 [ headport=n, tailport=s, weight=1000];
 
-29 -> 55 [ ];
+82 -> 83 [ headport=n, tailport=s, weight=1000];
 
-19 -> 57 [ ];
+83 -> 84 [ headport=n, tailport=s, weight=1000];
 
-31 -> 58 [ ];
+84 -> 85 [ headport=n, tailport=s, weight=1000];
 
-33 -> 59 [ ];
+85 -> 86 [ headport=n, tailport=s, weight=1000];
 
-33 -> 61 [ ];
+86 -> 87 [ headport=n, tailport=s, weight=1000];
 
-31 -> 62 [ ];
+87 -> 88 [ headport=n, tailport=s, weight=1000];
+
+88 -> 89 [ headport=n, tailport=s, weight=1000];
+
+89 -> 90 [ headport=n, tailport=s, weight=1000];
+
+90 -> 91 [ headport=n, tailport=s, weight=1000];
+
+91 -> 92 [ headport=n, tailport=s, weight=1000];
+
+92 -> 93 [ headport=n, tailport=s, weight=1000];
+
+93 -> 94 [ headport=n, tailport=s, weight=1000];
+
+94 -> 95 [ headport=n, tailport=s, weight=1000];
+
+95 -> 96 [ headport=n, tailport=s, weight=1000];
+
+96 -> 97 [ headport=n, tailport=s, weight=1000];
+
+97 -> 98 [ headport=n, tailport=s, weight=1000];
+
+98 -> 99 [ headport=n, tailport=s, weight=1000];
+
+99 -> 100 [ headport=n, tailport=s, weight=1000];
+
+100 -> 101 [ headport=n, tailport=s, weight=1000];
+
+101 -> 102 [ headport=n, tailport=s, weight=1000];
+
+102 -> 103 [ headport=n, tailport=s, weight=1000];
+
+103 -> 104 [ headport=n, tailport=s, weight=1000];
+
+104 -> 105 [ headport=n, tailport=s, weight=1000];
+
+105 -> 106 [ headport=n, tailport=s, weight=1000];
+
+20 -> 78 [ color=blue];
+
+33 -> 87 [ color=blue];
+
+2 -> 60 [ ];
+
+2 -> 62 [ ];
 
 6 -> 63 [ ];
 
-3 -> 37 [ color=blue];
+12 -> 65 [ ];
 
-34 -> 60 [ color=blue];
+12 -> 66 [ color=blue];
 
-56 -> 60 [ headport=e, tailport=e, color=red, weight=0];
+10 -> 67 [ ];
 
-56 -> 60 [ headport=e, tailport=e, color=green, weight=0];
+10 -> 68 [ color=blue];
 
-56 -> 60 [ headport=w, tailport=w, color=orange, weight=0];
+8 -> 69 [ ];
 
-64 -> 6 [ ];
+8 -> 70 [ color=blue];
 
-68 -> 46 [ ];
+6 -> 71 [ ];
 
-69 -> 19 [ ];
+18 -> 72 [ ];
 
-70 -> 56 [ ];
+16 -> 73 [ ];
 
-71 -> 60 [ ];
+16 -> 74 [ color=blue];
+
+16 -> 75 [ ];
+
+22 -> 76 [ ];
+
+24 -> 77 [ ];
+
+20 -> 79 [ ];
+
+26 -> 80 [ ];
+
+20 -> 81 [ ];
+
+29 -> 82 [ ];
+
+31 -> 83 [ ];
+
+27 -> 84 [ color=blue];
+
+27 -> 85 [ ];
+
+37 -> 86 [ ];
+
+27 -> 88 [ ];
+
+39 -> 89 [ ];
+
+41 -> 90 [ ];
+
+45 -> 92 [ ];
+
+43 -> 94 [ ];
+
+57 -> 96 [ ];
+
+57 -> 97 [ color=blue];
+
+55 -> 98 [ ];
+
+55 -> 99 [ ];
+
+53 -> 100 [ ];
+
+53 -> 101 [ color=blue];
+
+51 -> 102 [ ];
+
+51 -> 103 [ ];
+
+41 -> 104 [ ];
+
+39 -> 105 [ ];
+
+16 -> 106 [ ];
+
+3 -> 61 [ color=blue];
+
+13 -> 64 [ color=blue];
+
+46 -> 91 [ color=blue];
+
+48 -> 93 [ color=blue];
+
+58 -> 95 [ color=blue];
+
+87 -> 93 [ headport=e, tailport=e, color=red, weight=0];
+
+87 -> 93 [ headport=e, tailport=e, color=green, weight=0];
+
+78 -> 91 [ headport=w, tailport=w, color=orange, weight=0];
+
+87 -> 93 [ headport=w, tailport=w, color=orange, weight=0];
+
+107 -> 8 [ ];
+
+108 -> 10 [ ];
+
+109 -> 12 [ ];
+
+110 -> 64 [ ];
+
+111 -> 16 [ ];
+
+115 -> 78 [ ];
+
+116 -> 27 [ ];
+
+117 -> 87 [ ];
+
+118 -> 91 [ ];
+
+119 -> 93 [ ];
+
+120 -> 51 [ ];
+
+121 -> 53 [ ];
+
+122 -> 55 [ ];
+
+123 -> 57 [ ];
+
+124 -> 95 [ ];
 
 }

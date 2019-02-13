@@ -79,8 +79,8 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
             outputs = [self._lm_output(lm_output)]
             outputs.extend(attn_outputs)
 
-            # final_output = self._weighted_output(lm_output, attn_outputs, lmda)
-            final_output = lm_output
+            final_output = self._weighted_output(lm_output, attn_outputs, lmda)
+            # final_output = lm_output
             new_attn_states = \
                 [self._attention_states(attn_inputs[i],
                                         attn_ids[i],
@@ -101,6 +101,9 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
             attn_ids = [att[1] for att in new_attn_states]
             return final_output, tf.transpose(tf.stack(attn_alphas), [1, 0, 2]), \
                    tf.transpose(tf.stack(attn_ids), [1, 0, 2]), lmda, states
+        
+    def _weighted_output(lm_output, attn_outputs, lmda):
+        return lm_output
 
     def _state(self, lm_output, state):
         return tf.contrib.layers.linear(tf.concat(axis=1, values=state[-1]), self._size)
@@ -288,6 +291,7 @@ class AttentionBaselineCell(AttentionCell):
         num_tasks = num_tasks or self._num_tasks
         with tf.variable_scope("Lambda"):
             return tf.ones([tf.shape(state)[0], num_tasks])
+            # return tf.concat(values=[tf.ones([tf.shape(state)[0], 1]), tf.zeros([tf.shape(state)[0], num_tasks-1])], axis=1) # why not this?
 
     def _weighted_output(self, lm_output, attn_outputs, weights):
         outputs = [lm_output]

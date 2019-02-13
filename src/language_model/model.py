@@ -68,7 +68,7 @@ class Model(object):
                 'gradient_clip': 5,
                 'max_len': 100,
                 'batch_size': 30,
-                'max_epochs': 500,
+                'max_epochs': 10,
                 'patience': 5,
                }
 

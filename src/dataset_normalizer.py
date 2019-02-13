@@ -172,10 +172,10 @@ def find_id_groups(G: nx.DiGraph) -> Generator:
         if t:
             yield c, t
 
-def change_graph(G: nx.DiGraph, change_name: Callable):
+def normalize(G: nx.DiGraph, change_name: Callable):
     groups = find_id_groups(G)
     given_names = set() # type: Set[str]
-    left_ids = defaultdict(lambda: list(range(1,1000))) # type: Dict[str, List[int]]
+    left_ids = defaultdict(lambda: list(range(1,3001))) # type: Dict[str, List[int]]
     for group, t in groups:
         if len(left_ids[t.name]) == 0:
             raise ValueError('To small number range for current file')
@@ -190,7 +190,7 @@ def load_edit_save(in_n_out):
     in_file, out_file = in_n_out
     G, g, change_name, change_type = read_graph(in_file)
     try:
-        change_graph(G, change_name)
+        normalize(G, change_name)
     except ValueError as v:
         raise ValueError(str(v) + ' with files: ' + str(in_n_out))
     write_graph(out_file, g)
@@ -206,6 +206,14 @@ def run_edit(source_dir, target_dir):
     pool = Pool(4)
     for _ in tqdm(pool.imap_unordered(load_edit_save, zip(in_files, out_files)), total=len(in_files)):
         pass
+
+def print_as_text(G):
+    tokens = [i for i in G.nodes if G.nodes[i]['data'].type in {FeatureNode.IDENTIFIER_TOKEN, FeatureNode.TOKEN}]
+    tokens.sort(key=lambda i: G.nodes[i]['data'].startPosition)
+    tokens_vs = [G.nodes[i]['data'].contents for i in tokens]
+    new_liners = {'SEMI': ';', 'LBRACE': '{', 'RBRACE': '}'}
+    tokens_vsn = [new_liners[t]+'\n' if t in new_liners else t for t in tokens_vs]
+    print(' '.join(tokens_vsn))
 
 if __name__ == '__main__':
     target_dir = args.target_path
