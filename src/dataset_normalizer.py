@@ -9,6 +9,7 @@ from os.path import relpath, join, dirname
 import os
 from tqdm import tqdm
 from multiprocessing import Pool
+from collections import deque
 
 random.seed(2019)
 
@@ -71,27 +72,27 @@ def remove_nodes_with_property(G: nx.Graph, rm_prop: Callable):
 
 
 # This is veeery slow, need to work on that: all ancestors are first computed, Graph is copied
-def has_ancestor_in(G: nx.DiGraph, n: int, s: set):
-    H = G.copy()
-    remove_edges_with_property(H,
-        lambda e: G.edges[e]['data'].type not in (FeatureEdge.AST_CHILD, FeatureEdge.ASSOCIATED_TOKEN)
-    )
-    ancestors = nx.ancestors(H, n)
-    for a in ancestors:
-        if G.nodes[a]['data'].contents in s:
-            return True
+def has_ancestor_in(G: nx.DiGraph, n: int, s: set, edges_to_use: set = {FeatureEdge.AST_CHILD, FeatureEdge.ASSOCIATED_TOKEN}):
+    next_ancestors = deque([n])
+    while next_ancestors:
+        a = next_ancestors.pop()
+        candids = [get_ancestor_with_edge(G, a, e) for e in edges_to_use]
+        next_a = [n for n in candids if n is not None] # type: List[int]
+        next_ancestors.extendleft(next_a)
+        for n in next_a:
+            contents = G.nodes[n]['data'].contents
+            if contents in s:
+                return contents
     return False
 
 def type_of_newly_defined_variable(G: nx.DiGraph, usages: set):
-    H = G.copy()
-    remove_edges_with_property(H, lambda e: G.edges[e]['data'].type not in {FeatureEdge.ASSOCIATED_TOKEN})
     for n in usages:
-        if has_ancestor_in(H, n, {'VARIABLE'}):
-            H = G.copy()
-            remove_edges_with_property(H, lambda e: G.edges[e]['data'].type not in {FeatureEdge.ASSOCIATED_TOKEN, FeatureEdge.AST_CHILD})
-            if has_ancestor_in(H, n, {'PARAMETERS'}):
+        anc_contents = has_ancestor_in(G, n, {'VARIABLE', 'METHOD', 'CLASS'}, edges_to_use={FeatureEdge.ASSOCIATED_TOKEN})
+        if anc_contents == 'VARIABLE':
+            anc_contents = has_ancestor_in(G, n, {'PARAMETERS', 'METHOD'})
+            if anc_contents == 'PARAMETERS':
                 return IdTypes.Argument
-            elif has_ancestor_in(H, n, {'METHOD'}):
+            elif anc_contents == 'METHOD':
                 return IdTypes.LocalVariable
             else:
                 var_node = get_ancestor_with_edge(G, n, FeatureEdge.ASSOCIATED_TOKEN)
@@ -103,9 +104,9 @@ def type_of_newly_defined_variable(G: nx.DiGraph, usages: set):
                             return IdTypes.Parameter
                 raise ValueError('Could not map VARIABEL type id to any IdType')
             
-        if has_ancestor_in(H, n, {'METHOD'}):
+        elif anc_contents == 'METHOD':
             return IdTypes.Function
-        if has_ancestor_in(H, n, {'CLASS'}):
+        if anc_contents == 'CLASS':
             return IdTypes.Class
     return None
 
@@ -123,21 +124,13 @@ def remove_all_import_package_ids(G: nx.DiGraph):
     )
 
 def remove_all_package_reference_ids(G: nx.DiGraph):
-    H = G.copy()
-    remove_nodes_with_property(H, lambda n: G.nodes[n]['data'].type not in (FeatureNode.IDENTIFIER_TOKEN, FeatureNode.SYMBOL_TYP))
-    
-    # build a dictionary of identifier ids to their contents + their symbol_typs contents
-    # conpare these contents to see if it is a package reference
-    # What about references that are not explicitely imported? Remove everything beginning in {'java',...}?
-    identifier_nodes = [n for n in H.nodes if G.nodes[n]['data'].type == FeatureNode.IDENTIFIER_TOKEN]
-    new_id = {idn: G.nodes[idn]['data'].contents == G.nodes[G.in_edges(idn)[0]].contents for idn in identifier_nodes}
+    identifier_nodes = [n for n in G.nodes if G.nodes[n]['data'].type == FeatureNode.IDENTIFIER_TOKEN]
+    new_id = {idn: G.nodes[idn]['data'].contents == get_ancestor_with_edge(G, idn, FeatureEdge.ASSOCIATED_SYMBOL) for idn in identifier_nodes}
     remove_nodes_with_property(G, lambda n: not new_id[n])
 
 def find_fun_ids_and_var_ids(G: nx.DiGraph) -> Tuple[List[int], List[int]]:
     ids = [i for i in G.nodes if G.nodes[i]['data'].type == FeatureNode.IDENTIFIER_TOKEN]
-    H = G.copy()
-    remove_edges_with_property(H, lambda e: G.edges[e]['data'].type not in {FeatureEdge.ASSOCIATED_TOKEN})
-    fun_ids = [i for i in ids if has_ancestor_in(H, i, {'METHOD_INVOCATION', 'METHOD_SELECT', 'METHOD'})]
+    fun_ids = [i for i in ids if has_ancestor_in(G, i, {'METHOD_INVOCATION', 'METHOD_SELECT', 'METHOD'}, edges_to_use={FeatureEdge.ASSOCIATED_TOKEN})]
     return fun_ids, list(set(ids)-set(fun_ids))
 
 
@@ -196,12 +189,13 @@ def change_graph(G: nx.DiGraph, change_name: Callable):
 def load_edit_save(in_n_out):
     in_file, out_file = in_n_out
     G, g, change_name, change_type = read_graph(in_file)
-    change_graph(G, change_name)
+    try:
+        change_graph(G, change_name)
+    except ValueError as v:
+        raise ValueError(str(v) + ' with files: ' + str(in_n_out))
     write_graph(out_file, g)
 
-if __name__ == '__main__':
-    target_dir = args.target_path
-    source_dir = args.source_path
+def run_edit(source_dir, target_dir):
     in_files = glob(source_dir+'/**/*.proto', recursive=True)
     out_files = []
     for in_file in in_files:
@@ -212,3 +206,8 @@ if __name__ == '__main__':
     pool = Pool(4)
     for _ in tqdm(pool.imap_unordered(load_edit_save, zip(in_files, out_files)), total=len(in_files)):
         pass
+
+if __name__ == '__main__':
+    target_dir = args.target_path
+    source_dir = args.source_path
+    run_edit(source_dir, target_dir)
