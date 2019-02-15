@@ -33,14 +33,20 @@ Done this week:
 - Found reason for bad training performance: the lambda parameter that is the gate between choosing to use the predictions of the standard LSTM and the attention copying seems to be trained towards only allowing LSTM predictions fairly quick. Thus after first epoch it is almost 0 for the attention copying for all examples in a sample I took.
     - This problem is the same for attention over inputs and outputs
 - Tested if the copying mechanism does anything useful, by letting a model with only the copying run on a small dataset and could see that especially for input-based attention the copy mechanism can be useful. It achieves a 20% accuracy on the mini data set vs 70% of of the LSTM and 5% of a random model.
-
-Currently working on:
 - Dataset preperation, the task for session 6. I have a prototype of a transforming function, but it is very slow. Tomorrow I will spend half of the day to try to improve efficiency so that it runs over the whole code as well as fix some last bugs.
 
 ### Proper Dataset Preparation (Until Session 6)
 > In this week the plan is to come as close as possible to the way the dataset was prepared in the paper. There might be cases where this is hard, for a lot of identifiers in the dataset we use in class it is not totally clear which of the types of identifiers they belong to and I  might need to come up with some tricks to figure that out.\\
 >
 > -- Original Proposal
+
+Original task already done in the previous work. Focus of this week now: Why does the SPN not perform better?
+Tasks:
+- Propagate hidden state between sequences – or simply try to use longer sequences
+- Implement competing attention mechanism
+
+Currently working on:
+- Introduce condition for using copying — if there is nothing to copy, don't average with the attention
 
 ### Extensions and Experiments (Until Session 7)
 > I want to propose two extension ideas, to be finished as much as possible until session 7.
