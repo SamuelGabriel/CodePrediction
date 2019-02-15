@@ -102,7 +102,7 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
             return final_output, tf.transpose(tf.stack(attn_alphas), [1, 0, 2]), \
                    tf.transpose(tf.stack(attn_ids), [1, 0, 2]), lmda, states
         
-    def _weighted_output(lm_output, attn_outputs, lmda):
+    def _weighted_output(self, lm_output, attn_outputs, lmda):
         return lm_output
 
     def _state(self, lm_output, state):

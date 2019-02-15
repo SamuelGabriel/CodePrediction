@@ -66,7 +66,7 @@ class Model(object):
                 'learning_rate_decay': 1.,
                 'momentum': 0.85,
                 'gradient_clip': 5,
-                'max_len': 100,
+                'max_len': 400,
                 'batch_size': 30,
                 'max_epochs': 10,
                 'patience': 5,
@@ -92,7 +92,7 @@ class Model(object):
 
         self.__run_name = hyperparameters['run_id']
         self.__model_save_dir = model_save_dir or "."
-        self.__sess = tf.Session(graph=tf.Graph())# tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf.Session(graph=tf.Graph())#, config=tf.ConfigProto(log_device_placement=True))
+        self.__sess = tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf.Session(graph=tf.Graph())#, config=tf.ConfigProto(log_device_placement=True))
         self.__writer = tf.summary.FileWriter('/tmp/tf/1')
 
     @property
@@ -266,8 +266,8 @@ class Model(object):
             }  # type: Dict[str, List[Any]]
         
         vocab = self.metadata['token_vocab']
-        current_chunk = []
-        sub_chunk_steps = 4
+        current_chunk = [] # type: List[Tuple[str, bool]]
+        sub_chunk_steps = 2
         token_seqs_iterator = iter(token_seqs)
         while True:
             s = list(islice(token_seqs_iterator, self.hyperparameters['max_len']//sub_chunk_steps))

@@ -136,7 +136,7 @@ class BasicModel(ModelBase):
         labels = tf.reshape(self.targets, [self.batch_size * self.seq_length, 1])
         loss = tf.nn.sampled_softmax_loss(weights=tf.transpose(softmax_w), biases=softmax_b,labels=labels, inputs=output, num_sampled=self.config.num_samples, num_classes=self.vocab_size) \
             if self.config.num_samples > 0 else \
-            tf.nn.sparse_softmax_cross_entropy_with_logits(logits=self._logits, labels=tf.reshape(self.targets, [-1]))
+            tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=tf.reshape(self.targets, [-1]))
             #isn't logits here the right thing!? But in source it is self._logits
 
         return logits, predict, loss, state
@@ -224,6 +224,8 @@ class AttentionModel(BasicModel):
         # the ids of all the things attended over with alphas also shape (steps, batch, num_attns, max_attention)
         attn_ids = [tf.reshape(attn_id_tensor[:, :, t, :], [-1, self._max_attention]) for t in range(self.num_tasks-1)]
         # each item: (steps, batch, k) -> (steps*batch, k)
+        # this filter zeros the lambda for tasks that are not copyable
+        # alphas_fileter = 
 
         softmax_w = tf.get_variable("softmax_w", [self.size, self.vocab_size])
         softmax_b = tf.get_variable("softmax_b", [self.vocab_size])
@@ -239,6 +241,7 @@ class AttentionModel(BasicModel):
 
         prediction_tensor = tf.stack([standard_predict] + attn_predict)
         predict = weighted_average(prediction_tensor, task_weights)
+        # a good idea: drop copying mechanism when it does not have any copying 
         # size  (steps*batch, vocab)
         # are theses already normailzed probabilities?
 

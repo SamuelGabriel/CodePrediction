@@ -10,6 +10,7 @@ import os
 from tqdm import tqdm
 from multiprocessing import Pool
 from collections import deque, defaultdict
+# deterministic naming
 
 random.seed(2019)
 
