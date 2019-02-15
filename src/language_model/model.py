@@ -92,7 +92,7 @@ class Model(object):
 
         self.__run_name = hyperparameters['run_id']
         self.__model_save_dir = model_save_dir or "."
-        self.__sess = tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf.Session(graph=tf.Graph())#, config=tf.ConfigProto(log_device_placement=True))
+        self.__sess = tf.Session(graph=tf.Graph())# tf_debug.LocalCLIDebugWrapperSession(tf.Session(graph=tf.Graph()))# tf.Session(graph=tf.Graph())#, config=tf.ConfigProto(log_device_placement=True))
         self.__writer = tf.summary.FileWriter('/tmp/tf/1')
 
     @property
