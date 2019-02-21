@@ -8,7 +8,7 @@
 \section{Overview}
 Many software developers use IDEs, a feature rich editor specialized for programming in particular programming languages, for their work. One of the popular features of IDEs is code completion. Code completion lets the IDE propose what comes next in the code, this can make a developers workflow much more efficient, since she does not have to type very obvious thing herself.
 A particular subtask of code completion is the prediction of the next token in code, opposed to predicting the next characters on a subtoken level.
-In this project we aim to implement teh Sparse Pointer Network (SPN) \citep{bhoopchand2016learning} model that learns to solve this problem by training on a large corpus of code, just as \cite{bhoopchand2016learning} did.
+In this project we aim to implement the Sparse Pointer Network (SPN) \citep{bhoopchand2016learning} model that learns to solve this problem by training on a large corpus of code, just as \cite{bhoopchand2016learning} did.
 \\
 Current approaches to this problem usually work by parsing the code, including imported libraries, for possible next tokens that fit into the next position. While this might work most of the time, especially for untyped languages like Python, the language trained on by \cite{bhoopchand2016learning}, this might fail due to having too many possible next tokens.\\
 An approach of previous work to combat this was to lend methods from language modeling (LM) for this task, including LSTMs and n-grams. These on the other hand struggle a lot with the prediction of identifiers, because identifiers are very unique to a particular file and are not used the same way across files: Two very different objects might have the same name.\\

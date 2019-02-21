@@ -36,20 +36,72 @@ def copy_temp_files(files, temp_dir):
     return temp_files
 
 
-def create_model(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
+def create_model(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
     if config.attention and config.attention_variant == "input":
-        return AttentionModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks)
+        return AttentionModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks, initial_state=initial_state)
     elif config.attention and config.attention_variant == "output":
-        return AttentionOverOutputModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks)
+        return AttentionOverOutputModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks, initial_state=initial_state)
     elif config.attention and config.attention_variant == "keyvalue":
-        return AttentionKeyValueModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks)
+        return AttentionKeyValueModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks, initial_state=initial_state)
     elif config.attention and config.attention_variant == "exlambda":
-        return AttentionWithoutLambdaModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks)
+        return AttentionWithoutLambdaModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks, initial_state=initial_state)
     elif config.attention and config.attention_variant == "baseline":
-        return AttentionBaselineModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks)
+        return AttentionBaselineModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, masks=masks, initial_state=initial_state)
     else:
-        return BasicModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate)
+        return BasicModel(is_training=is_training, config=config, targets=targets, input_data=input_data, lengths=lengths, dropout_keep_rate=dropout_keep_rate, initial_state=initial_state)
 
+def get_initial_state(model):
+    state = []
+    att_states = None
+    att_ids = None
+    att_counts = None
+    for c, m in model.initial_state[0] if model.is_attention_model else model.initial_state:
+        state.append((c.eval(), m.eval()))
+    if model.is_attention_model:
+        att_states = [s.eval() for s in list(model.initial_state[1])]
+        att_ids = [s.eval() for s in list(model.initial_state[2])]
+        att_counts = [s.eval() for s in list(model.initial_state[4])]
+
+    return state, att_states, att_ids, att_counts
+
+def construct_state_feed_dict(model, state, att_states, att_ids, att_counts):
+    feed_dict = {}
+    for i, (c, m) in enumerate(model.initial_state[0]) if model.is_attention_model else enumerate(model.initial_state):
+        feed_dict[c], feed_dict[m] = state[i]
+
+    if model.is_attention_model:
+        for i in range(len(model.initial_state[1])):
+            feed_dict[model.initial_state[1][i]] = att_states[i]
+            feed_dict[model.initial_state[2][i]] = att_ids[i]
+            feed_dict[model.initial_state[4][i]] = att_counts[i]
+
+    return feed_dict
+
+def extract_results(state_eval, model):
+    state_end = len(model.final_state[0])*2 if model.is_attention_model else len(state_eval)
+    state_flat = state_eval[:state_end]
+    state = [state_flat[i:i+2] for i in range(0, len(state_flat), 2)]
+
+    num_att_states = len(model.final_state[1]) if model.is_attention_model else 0
+    att_states = state_eval[state_end:state_end + num_att_states] if model.is_attention_model else None
+    att_ids = state_eval[state_end+num_att_states:state_end + num_att_states*2] if model.is_attention_model else None
+    alpha_states = state_eval[state_end+num_att_states*2:state_end+num_att_states*3] if model.is_attention_model else None
+    att_counts = state_eval[state_end+num_att_states*3:state_end+num_att_states*4]
+    lambda_state = state_eval[-1] if model.is_attention_model else None
+
+    return state, att_states, att_ids, alpha_states, att_counts, lambda_state
+
+def get_evals_for_state(model):
+    extra_evals = []
+    for c, m in model.final_state[0] if model.is_attention_model else model.final_state:
+        extra_evals.append(c)
+        extra_evals.append(m)
+
+    if model.is_attention_model:
+        extra_evals.extend(model.final_state[1] + model.final_state[2] + model.final_state[3] + model.final_state[4])
+        extra_evals.append(model.final_state[5])
+
+    return extra_evals
 
 def attention_masks(attns, masks, length):
     lst = []

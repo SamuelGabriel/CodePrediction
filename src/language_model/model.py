@@ -66,7 +66,7 @@ class Model(object):
                 'learning_rate_decay': 1.,
                 'momentum': 0.85,
                 'gradient_clip': 5,
-                'max_len': 400,
+                'max_len': 200,
                 'batch_size': 30,
                 'max_epochs': 10,
                 'patience': 5,
@@ -162,7 +162,7 @@ class Model(object):
         masks = tf.transpose(self.placeholders['masks'])
         tokens_lengths = self.placeholders['tokens_lengths']
         dropout_keep_rate = self.placeholders['dropout_keep_rate']
-        #TODO# Insert your model here, creating self.ops['loss']
+
         m_params = self.modelparameters
         m_params.set_hyperparameters(vocab_size=len(self.metadata['token_vocab']), seq_length=self.hyperparameters['max_len']-1, batch_size=self.hyperparameters['batch_size'])
         
@@ -178,10 +178,13 @@ class Model(object):
             model = utils.create_model(True, m_params, tokens[1:,:], tokens[:-1,:], tokens_lengths, dropout_keep_rate, masks=masks)
 
         mask = tf.transpose(tf.sequence_mask(self.placeholders['tokens_lengths'], self.hyperparameters['max_len'], dtype=tf.int64))
-        # Mask is not active for training, but I think it is the same in the model
+
         self.ops['loss'] = model.cost
         predictions = tf.reshape(tf.argmax(model.predict, -1), [m_params.seq_length, m_params.batch_size])
         self.ops['num_correct_tokens'] = tf.reduce_sum(tf.cast(tf.equal(predictions, tokens[1:,:]), tf.int64) * mask[1:, :])
+        self.ops['last_state'] = model.final_state
+        self.__model = model
+        self.placeholders['initial_state'] = model.initial_state
 
     def __make_training_step(self) -> None:
         """
@@ -248,8 +251,38 @@ class Model(object):
         tokens = Counter(t for f in data_files for t, _ in self.load_data_file(f))
                 
         self.__metadata = {'token_vocab': Vocabulary.create_vocabulary(tokens, max_size=5000)}
+    
+    def get_vocab_into_same_len_chunks(self, tokens, chunk_len):
+        vocab = self.metadata['token_vocab']
+        split_tokens =  chunked(tokens, chunk_len)
+        return [vocab.get_id_or_unk_multiple(t, pad_to_size=chunk_len) for t in split_tokens]
+    
+    def pad_with(self, seq, length, pad_val=np.nan):
+        # only works with len(seq)<=length
+        return np.concatenate((seq, (length - len(seq))*[pad_val]))
+    
+    def pad_with_list(self, seqs, pad_val=0):
+        """This function takes a list of lists of lists. And then pads
+        on dimension 1 so that the dimensions match, given that dimensions
+        0 and 2 match already.
+        
+        Arguments:
+            sews {List[List[List[Any]]]}
+        
+        Keyword Arguments:
+            pad_val {int} (default: {0})
+        
+        Returns:
+            np.array of three dimensions
+        """
+        seq_len = len(seqs[0][0])
+        pad_list = [pad_val] * seq_len
+        max_file_seq_len = max(len(file_seq) for file_seq in seqs)
+        padded_seqs = [np.concatenate((file_seq, np.array((max_file_seq_len - len(file_seq)) * [pad_list])), axis=0) if len(file_seq) < max_file_seq_len else file_seq for file_seq in seqs]
+        return np.array(padded_seqs)
 
-    def load_data_from_raw_sample_sequences(self, token_seqs: Iterable[Tuple[str, bool]]) -> LoadedSamples:
+
+    def load_data_from_raw_sample_sequences(self, token_seqs: Iterable[List[Tuple[str, bool]]]) -> LoadedSamples:
         """
         Load and tensorise data.
 
@@ -264,54 +297,42 @@ class Model(object):
             "tokens_lengths": [],
             "masks": []
             }  # type: Dict[str, List[Any]]
-        
-        vocab = self.metadata['token_vocab']
-        current_chunk = [] # type: List[Tuple[str, bool]]
-        sub_chunk_steps = 2
-        token_seqs_iterator = iter(token_seqs)
-        while True:
-            s = list(islice(token_seqs_iterator, self.hyperparameters['max_len']//sub_chunk_steps))
-            current_chunk += s
-            current_chunk = current_chunk[-self.hyperparameters['max_len']:]
-            if not s:
-                break
-            loaded_data['tokens_lengths'].append(len(current_chunk))
-            loaded_data['tokens'].append(vocab.get_id_or_unk_multiple([e for e, m in current_chunk], pad_to_size=self.hyperparameters['max_len']))
-            m = [m for e, m in current_chunk]
-            loaded_data['masks'].append(m + (self.hyperparameters['max_len']-len(m))*[np.nan])
+        max_len = self.hyperparameters['max_len']
+        token_seqs = sorted(token_seqs, key=lambda x: len(x))
 
-        """
-        n_slice = []
-        for t in token_seqs:
-            n_slice += [t]
-            n_slice = n_slice[:self.hyperparameters['max_len']]
-            ids = vocab.get_id_or_unk_multiple(n_slice, pad_to_size=self.hyperparameters['max_len'])
-            loaded_data['tokens_lengths'].append(len(n_slice))
-            loaded_data['tokens'].append(ids)
-        """
-        
+        def compute_tokens_lengths(length, max_len):
+            r = []
+            while length >= max_len:
+                r.append(max_len)
+                length -= max_len
+            if length:
+                r.append(length)
+            return r
+
+        for file_seq in token_seqs:
+            split_tokens = self.get_vocab_into_same_len_chunks([e for e,m in file_seq], max_len)
+            loaded_data['tokens_lengths'].append(np.array(compute_tokens_lengths(len(file_seq), max_len), dtype=np.int64))
+            loaded_data['tokens'].append(np.array(split_tokens))
+            loaded_data['masks'].append(np.array([self.pad_with(m, max_len) for m in chunked([m for e,m in file_seq], max_len)]))
 
         # Turn into numpy arrays for easier slicing later:
         assert (len(loaded_data['tokens']) == len(loaded_data['tokens_lengths'])) and (len(loaded_data['tokens']) == len(loaded_data['masks'])), \
             "Loaded 'tokens' and 'tokens_lengths' lists need to be aligned and of" \
             + "the same length!"
-        loaded_data['tokens'] = np.array(loaded_data['tokens'])
-        loaded_data['masks'] = np.array(loaded_data['masks'])
-        loaded_data['tokens_lengths'] = np.array(loaded_data['tokens_lengths'])
         return loaded_data
 
     def load_data_from_dir(self, data_dir: str, max_num_files: Optional[int]=None) -> LoadedSamples:
         data_files = get_data_files_from_directory(data_dir, max_num_files)
-        return self.load_data_from_raw_sample_sequences(em
+        return self.load_data_from_raw_sample_sequences([em for em in self.load_data_file(data_file)]
                                                         for data_file in data_files
-                                                        for em in self.load_data_file(data_file))
+                                                        )
 
-    def __split_data_into_minibatches(self,
-                                      data: LoadedSamples,
-                                      epoch_number: int,
-                                      is_train: bool,
-                                      drop_incomplete_final_minibatch: bool=True) \
-            -> Iterable[Tuple[int, Dict[tf.Tensor, Any]]]:
+    def __split_data_into_sequenced_minibatches(self,
+                                                data: LoadedSamples,
+                                                epoch_number: int,
+                                                is_train: bool,
+                                                drop_incomplete_final_minibatch: bool = True) \
+            -> Iterable[Tuple[int, List[Dict[tf.Tensor, Any]]]]:
         """
         Take tensorised data and chunk into feed dictionaries corresponding to minibatches.
 
@@ -329,23 +350,29 @@ class Model(object):
         """
         total_num_samples = len(data['tokens'])
         indices = np.arange(total_num_samples)
-        if is_train:
-            np.random.shuffle(indices)
+        # removed randomness in order during training, so that similar lengths stay close
         
         batch_size = self.hyperparameters['batch_size']
-        for chunked_indices in chunked(indices, n=batch_size):
-            if drop_incomplete_final_minibatch and len(chunked_indices) < batch_size:
+        for lower_index in range(0, total_num_samples, batch_size):
+            if drop_incomplete_final_minibatch and lower_index > total_num_samples - batch_size:
                 continue
+            supremum_index = lower_index + batch_size
+            tokens = self.pad_with_list(data['tokens'][lower_index:supremum_index])
+            tokens_lengths = data['tokens_lengths'][lower_index:supremum_index]
+            tokens_lengths = np.array([self.pad_with(t, max(len(seq) for seq in tokens_lengths), pad_val=0) for t in tokens_lengths])
+            masks = self.pad_with_list(data['masks'][lower_index:supremum_index], pad_val=False)
+            feed_dicts = []
+            for t, tl, m in zip(np.rollaxis(tokens, 1), np.rollaxis(tokens_lengths, 1), np.rollaxis(masks, 1)):
+                feed_dict = {
+                    self.placeholders['dropout_keep_rate']: self.hyperparameters['dropout_keep_rate'] if is_train else 1.0,
+                    self.placeholders['tokens']: t,
+                    self.placeholders['tokens_lengths']: tl,
+                    self.placeholders['masks']: m,
+                    self.placeholders['global_step']: epoch_number
+                }
+                feed_dicts.append(feed_dict)
 
-            feed_dict = {
-                self.placeholders['dropout_keep_rate']: self.hyperparameters['dropout_keep_rate'] if is_train else 1.0,
-                self.placeholders['tokens']: data['tokens'][chunked_indices],
-                self.placeholders['tokens_lengths']: data['tokens_lengths'][chunked_indices],
-                self.placeholders['masks']: data['masks'][chunked_indices],
-                self.placeholders['global_step']: epoch_number
-            }
-
-            yield len(chunked_indices), feed_dict
+            yield len(tokens_lengths), feed_dicts
 
     def __run_epoch_in_batches(self, data: LoadedSamples, epoch_name: str, is_train: bool, epoch_number: int =0) -> Tuple[float, float]:
         """
@@ -359,9 +386,9 @@ class Model(object):
         """
         epoch_loss, epoch_correct_predictions, epoch_total_tokens = 0.0, 0.0, 0.0
         num_samples_so_far, num_total_samples = 0, len(data['tokens'])
-        data_generator = self.__split_data_into_minibatches(data, epoch_number, is_train=is_train)
+        data_generator = self.__split_data_into_sequenced_minibatches(data, epoch_number, is_train=is_train)
         epoch_start = time.time()
-        for minibatch_counter, (samples_in_batch, batch_data_dict) in enumerate(data_generator):
+        for minibatch_counter, (samples_in_batch, batch_data_dicts) in enumerate(data_generator):
             if self.hyperparameters['mini_updates']:
                 print("%s: Batch %5i. Processed %i/%i samples. Loss so far: %.4f.  Acc. so far: %.2f%%  "
                         % (epoch_name, minibatch_counter,
@@ -375,13 +402,21 @@ class Model(object):
                 ops_to_run['train_step'] = self.__ops['train_step']
             if 'num_correct_tokens' in self.__ops:
                 ops_to_run['num_correct_tokens'] = self.__ops['num_correct_tokens']
-            op_results = self.__sess.run(ops_to_run, feed_dict=batch_data_dict)
-            num_samples_so_far += samples_in_batch
-            assert not np.isnan(op_results['loss'])
-            epoch_loss += op_results['loss']
-            if 'num_correct_tokens' in self.__ops:
-                epoch_total_tokens += np.sum(batch_data_dict[self.placeholders['tokens_lengths']])
-                epoch_correct_predictions += op_results['num_correct_tokens']
+            ops_to_run['last_state'] = self.__ops['last_state']
+            ops_to_run['last_state'] = utils.get_evals_for_state(self.__model)
+            state, att_states, att_ids, att_counts = utils.get_initial_state(self.__model)
+            for batch_data_dict in batch_data_dicts:
+                s_f_d = utils.construct_state_feed_dict(self.__model, state, att_states, att_ids, att_counts)
+                op_results = self.__sess.run(ops_to_run, feed_dict=batch_data_dict)
+                num_samples_so_far += samples_in_batch
+                assert not np.isnan(op_results['loss'])
+                epoch_loss += op_results['loss']
+                last_state = op_results['last_state']
+                state, att_states, att_ids, alpha_states, att_counts, lambda_state \
+                    = utils.extract_results(last_state, self.__model)
+                if 'num_correct_tokens' in self.__ops:
+                    epoch_total_tokens += np.sum(batch_data_dict[self.placeholders['tokens_lengths']])
+                    epoch_correct_predictions += op_results['num_correct_tokens']
         used_time = time.time() - epoch_start
         print("\r\x1b[K  Epoch %s took %.2fs [processed %s samples/second]"
               % (epoch_name, used_time, int(num_samples_so_far/used_time)))

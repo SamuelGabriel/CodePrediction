@@ -9,7 +9,7 @@ import tfutils
 
 
 class ModelBase(object):
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
         self.config = config
         self.is_training = is_training
         self.batch_size = batch_size = config.batch_size
@@ -24,7 +24,7 @@ class ModelBase(object):
 
         cell = self.create_cell()
 
-        self._initial_state = cell.zero_state(batch_size, tf.float32)
+        self._initial_state = initial_state or cell.zero_state(batch_size, tf.float32)
 
         with tf.device('/cpu:0'):
             self._embedding = embedding = tf.get_variable("embedding", [vocab_size, size], trainable=True)
@@ -108,8 +108,8 @@ class ModelBase(object):
 
 
 class BasicModel(ModelBase):
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
-        super(BasicModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
+        super(BasicModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, initial_state)
 
     def create_cell(self, size=None):
         size = size or self.config.hidden_size
@@ -147,7 +147,7 @@ class BasicModel(ModelBase):
 
 
 class AttentionModel(BasicModel):
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
         self._num_attns = len(config.attention)
         self._num_tasks = len(config.attention) + 1
         self._masks = masks #tf.placeholder(tf.bool,[config.seq_length, config.batch_size, len(config.attention)], name="masks")
@@ -156,7 +156,7 @@ class AttentionModel(BasicModel):
         self._lambda_type = config.lambda_type
         self._min_tensor = tf.ones([config.batch_size, self._max_attention]) * -1e-38
 
-        super(AttentionModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate)
+        super(AttentionModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, initial_state)
         print("Constructing Attention Model")
 
     @property
@@ -277,8 +277,8 @@ class AttentionOverOutputModel(AttentionModel):
     and half considered the input to the attention mechanism
     """
 
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
-        super(AttentionOverOutputModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
+        super(AttentionOverOutputModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks, initial_state)
         print("Constructing Attention over Output Model")
 
     def create_cell(self, size=None):
@@ -302,8 +302,8 @@ class AttentionKeyValueModel(AttentionModel):
     and the last 3rd the vector representations attended over
     """
 
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
-        super(AttentionKeyValueModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
+        super(AttentionKeyValueModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks, initial_state)
         print("Constructing Attention Key Value Model")
 
     def create_cell(self, size=None):
@@ -319,8 +319,8 @@ class AttentionKeyValueModel(AttentionModel):
 
 
 class AttentionWithoutLambdaModel(AttentionKeyValueModel):
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
-        super(AttentionWithoutLambdaModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
+        super(AttentionWithoutLambdaModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks, initial_state)
         print("Constructing Attention Without Lambda Model")
 
     def create_cell(self, size=None):
@@ -331,8 +331,8 @@ class AttentionWithoutLambdaModel(AttentionKeyValueModel):
 
 
 class AttentionBaselineModel(AttentionModel):
-    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None):
-        super(AttentionBaselineModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks)
+    def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
+        super(AttentionBaselineModel, self).__init__(is_training, config, targets, input_data, lengths, dropout_keep_rate, masks, initial_state)
         print("Constructing Attention Baseline Model")
 
     def create_cell(self, size=None):
