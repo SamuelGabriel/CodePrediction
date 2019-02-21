@@ -17,7 +17,12 @@ random.seed(2019)
 parser = argparse.ArgumentParser()
 parser.add_argument("--source-path")
 parser.add_argument("--target-path")
+parser.add_argument("--types-in-names", action='store_true')
+parser.add_argument("--max-postfix", default=3000)
 args = parser.parse_args()
+
+MAX_POSTFIX = args.max_postfix
+TYPES_IN_NAMES = args.types_in_names
 
 class IdTypes(Enum):
     LocalVariable = 1
@@ -87,31 +92,48 @@ def has_ancestor_in(G: nx.DiGraph, n: int, s: set, edges_to_use: set = {FeatureE
     return False
 
 def type_of_newly_defined_variable(G: nx.DiGraph, usages: set):
+    def output_name(var_type_name, java_type_name):
+        if TYPES_IN_NAMES:
+            return var_type_name+'-'+java_type_name
+        else:
+            return var_type_name
     for n in usages:
         anc_contents = has_ancestor_in(G, n, {'VARIABLE', 'METHOD', 'CLASS'}, edges_to_use={FeatureEdge.ASSOCIATED_TOKEN})
         if anc_contents == 'VARIABLE':
             anc_contents = has_ancestor_in(G, n, {'PARAMETERS', 'BLOCK', 'BODY', 'ANNOTATION'})
-            if anc_contents == 'PARAMETERS':
-                return IdTypes.Argument
-            elif anc_contents == 'ANNOTATION':
+            if anc_contents == 'ANNOTATION':
                 # Argument names in annotation are somehow handled as variables by the engine..
                 return None
+            var_node = get_ancestor_with_edge(G, n, FeatureEdge.ASSOCIATED_TOKEN)
+            assert var_node is not None
+            type_node = get_child_with_edge(G, var_node, FeatureEdge.AST_CHILD, ncontents='TYPE')
+            if type_node is None:
+                continue
+            j_type = get_child_with_edge(G, type_node, FeatureEdge.AST_CHILD) or get_child_with_edge(G, type_node, FeatureEdge.ASSOCIATED_TOKEN)
+            assert j_type is not None, 'failed for node: {}, type node id: {}'.format(G.nodes[n]['data'].contents, type_node)
+            java_type = G.nodes[j_type]['data'].contents # type: str
+            if java_type == 'PARAMETERIZED_TYPE':
+                type_node = get_child_with_edge(G, j_type, FeatureEdge.AST_CHILD, ncontents='TYPE')
+                assert type_node is not None
+                j_type = get_child_with_edge(G, type_node, FeatureEdge.AST_CHILD) or get_child_with_edge(G, type_node, FeatureEdge.ASSOCIATED_TOKEN)
+                assert j_type is not None
+                java_type = G.nodes[j_type]['data'].contents
+            if anc_contents == 'PARAMETERS':
+                return output_name(IdTypes.Argument.name, java_type)
             elif anc_contents:
-                return IdTypes.LocalVariable
+                return output_name(IdTypes.LocalVariable.name, java_type)
             else:
-                var_node = get_ancestor_with_edge(G, n, FeatureEdge.ASSOCIATED_TOKEN)
-                if var_node:
-                    var_par = get_ancestor_with_edge(G, var_node, FeatureEdge.AST_CHILD)
-                    if var_par:
-                        members = G.nodes[var_par]['data']
-                        if members.contents == 'MEMBERS':
-                            return IdTypes.Parameter
+                var_par = get_ancestor_with_edge(G, var_node, FeatureEdge.AST_CHILD)
+                if var_par:
+                    members = G.nodes[var_par]['data']
+                    if members.contents == 'MEMBERS':
+                        return output_name(IdTypes.Parameter.name, java_type)
                 raise ValueError('Could not map VARIABLE type id to any IdType for: ' + str(G.nodes[n]['data']))
             
         elif anc_contents == 'METHOD':
-            return IdTypes.Function
+            return IdTypes.Function.name
         if anc_contents == 'CLASS':
-            return IdTypes.Class
+            return IdTypes.Class.name
     return None
 
 def get_ancestor_with_edge(G: nx.DiGraph, n: int, etype: FeatureEdge) -> Optional[int]:
@@ -120,6 +142,15 @@ def get_ancestor_with_edge(G: nx.DiGraph, n: int, etype: FeatureEdge) -> Optiona
         if G.edges[e]['data'].type == etype:
             return e[0]
     return None
+
+def get_child_with_edge(G: nx.DiGraph, n: int, etype: FeatureEdge, ncontents: Optional[str] = None) -> Optional[int]:
+    e = G.out_edges(n)
+    for e in e:
+        if G.edges[e]['data'].type == etype:
+            if (ncontents is None) or (G.nodes[e[1]]['data'].contents == ncontents):
+                return e[1]
+    return None
+
 
 def remove_all_import_package_ids(G: nx.DiGraph):
     anc_set = {'IMPORT', 'IMPORTS', 'PACKAGE', 'PACKAGE_NAME'}
@@ -176,13 +207,13 @@ def find_id_groups(G: nx.DiGraph) -> Generator:
 def normalize(G: nx.DiGraph, change_name: Callable):
     groups = find_id_groups(G)
     given_names = set() # type: Set[str]
-    left_ids = defaultdict(lambda: list(range(1,3001))) # type: Dict[str, List[int]]
-    for group, t in groups:
-        if len(left_ids[t.name]) == 0:
+    left_ids = defaultdict(lambda: list(range(1, MAX_POSTFIX + 1))) # type: Dict[str, List[int]]
+    for group, type_name in groups:
+        if len(left_ids[type_name]) == 0:
             raise ValueError('To small number range for current file')
-        next_index = random.randint(0, len(left_ids[t.name])-1)
-        proposed_name = t.name+'{:02d}'.format(left_ids[t.name][next_index])
-        del left_ids[t.name][next_index]
+        next_index = random.randint(0, len(left_ids[type_name])-1)
+        proposed_name = type_name+'{:02d}'.format(left_ids[type_name][next_index])
+        del left_ids[type_name][next_index]
         given_names.add(proposed_name)
         for i in group:
             change_name(i, proposed_name)
@@ -192,7 +223,7 @@ def load_edit_save(in_n_out):
     G, g, change_name, change_type = read_graph(in_file)
     try:
         normalize(G, change_name)
-    except ValueError as v:
+    except Exception as v:
         raise ValueError(str(v) + ' with files: ' + str(in_n_out))
     write_graph(out_file, g)
 
