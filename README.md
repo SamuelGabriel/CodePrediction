@@ -44,9 +44,7 @@ Original task already done in the previous work. Focus of this week now: Why doe
 Tasks:
 - Propagate hidden state between sequences – or simply try to use longer sequences
 - Implement competing attention mechanism
-
-Currently working on:
-- Introduce condition for using copying — if there is nothing to copy, don't average with the attention
+- New dataset that also takes types into consideration
 
 ### Extensions and Experiments (Until Session 7)
 > I want to propose two extension ideas, to be finished as much as possible until session 7.
@@ -54,6 +52,12 @@ Currently working on:
 > Another possibility would be to test the effects on the architecture when removing the filter on the SPN making it similar to a simple combination of a Pointer Network and a standard LSTM (with attention) like proposed by See et al. for summarization. This simpler approach, which treats every token equally, was not introduced as a baseline in the original paper.
 >
 > -- Original Proposal
+
+Working on:
+- trying all the last resorts to make a difference: attention over outputs, larger attention window, look into attention storage
+
+Next:
+- different way of propagating error: learn to - only - copy whenever possible
 
 ### Padding (Until Session 8)
 No proposal yet...
