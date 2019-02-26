@@ -151,7 +151,7 @@ class AttentionModel(BasicModel):
         self._num_attns = len(config.attention)
         self._num_tasks = len(config.attention) + 1
         self._masks = masks #tf.placeholder(tf.bool,[config.seq_length, config.batch_size, len(config.attention)], name="masks")
-
+        self._copy_forcing = config.copy_forcing
         self._max_attention = config.max_attention
         self._lambda_type = config.lambda_type
         self._min_tensor = tf.ones([config.batch_size, self._max_attention]) * -1e-38
@@ -223,7 +223,7 @@ class AttentionModel(BasicModel):
         alphas = [tf.reshape(alpha_tensor[:, :, t, :], [-1, self._max_attention]) for t in range(self.num_tasks-1)]
         # the ids of all the things attended over with alphas also shape (steps, batch, num_attns, max_attention)
         attn_ids = [tf.reshape(attn_id_tensor[:, :, t, :], [-1, self._max_attention]) for t in range(self.num_tasks-1)]
-        # each item: (steps, batch, k) -> (steps*batch, k)
+        # each item: (steps, batch, max attention) -> (steps*batch, max attention)
         # this filter zeros the lambda for tasks that are not copyable
         # alphas_fileter = 
 
@@ -249,9 +249,18 @@ class AttentionModel(BasicModel):
 
         # Compute the loss, by computing the cross_entropy for two different parts differently
         # Why can't this just be computed using `predict`? Shouldn't it be enough to compute xent on that?
-        lm_cross_entropy = tf.nn.sampled_softmax_loss(weights=tf.transpose(softmax_w), biases=softmax_b,labels=tf.exapnd_dims(labels,1), inputs=output, num_sampled=self.config.num_samples, num_classes=self.vocab_size) \
-            if self.config.num_samples > 0 else \
-            tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
+        if self._copy_forcing:
+            def prune_logits(logits):
+                q = tf.tile(tf.expand_dims(labels, -1), [1, self._max_attention])
+                copyable = tf.squeeze(tf.reduce_any(tf.equal(tf.cast(attn_ids, tf.int64), q), -1), axis=[0])
+                zeros = tf.zeros_like(logits)
+                return tf.where(copyable, logits, zeros)
+            logits = tf.cond(self.dropout_keep_rate < 1.0, lambda: prune_logits(logits), lambda: logits)
+            lm_cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
+        else:
+            lm_cross_entropy = tf.nn.sampled_softmax_loss(weights=tf.transpose(softmax_w), biases=softmax_b,labels=tf.exapnd_dims(labels,1), inputs=output, num_sampled=self.config.num_samples, num_classes=self.vocab_size) \
+                if self.config.num_samples > 0 else \
+                tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=labels)
 
         attn_cross_entropies = [tfutils.cross_entropy_from_indices(labels, attn_id, alpha,
                                                                    self.batch_size*self.seq_length, self._max_attention)
