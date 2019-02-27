@@ -152,6 +152,7 @@ class AttentionModel(BasicModel):
         self._num_tasks = len(config.attention) + 1
         self._masks = masks #tf.placeholder(tf.bool,[config.seq_length, config.batch_size, len(config.attention)], name="masks")
         self._copy_forcing = config.copy_forcing
+        self._output_mixing = config.output_mixing
         self._max_attention = config.max_attention
         self._lambda_type = config.lambda_type
         self._min_tensor = tf.ones([config.batch_size, self._max_attention]) * -1e-38
@@ -170,7 +171,7 @@ class AttentionModel(BasicModel):
     def create_cell(self, size=None):
         cell = super(AttentionModel, self).create_cell()
         cell = attention_rnn.AttentionCell(cell, self._max_attention, self.size, self._num_attns,
-                                           self._lambda_type, self._min_tensor)
+                                           self._lambda_type, self._min_tensor, output_mixing=self._output_mixing)
         return cell
 
     def rnn(self, cell, inputs):
@@ -293,13 +294,12 @@ class AttentionOverOutputModel(AttentionModel):
     def create_cell(self, size=None):
         lstm = BasicModel.create_cell(self, size=self.size * 2)
         cell = attention_rnn.AttentionOverOutputCell(lstm, self._max_attention, self.size,
-                                                     self._num_attns, self._lambda_type, self._min_tensor)
+                                                     self._num_attns, self._lambda_type, self._min_tensor, self._output_mixing)
         return cell
 
     def rnn(self, cell, inputs):
         output, alpha_tensor, attn_id_tensor, lmbda, state = \
             super(AttentionOverOutputModel, self).rnn(cell, inputs)
-
         output = tf.slice(output, [0, 0, 0], [-1, -1, self.size])
         return output, alpha_tensor, attn_id_tensor, lmbda, state
 

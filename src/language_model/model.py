@@ -34,6 +34,7 @@ class ModelParams(object):
         self.attention_variant = 'input' # which kind of attention to use 'output' or 'input'
         self.masked_copying = True # should the attention be given a mask?
         self.copy_forcing = False # this will only backpropagate through the copy gate if possible
+        self.output_mixing = None # this can also be 'halfhalf' or 'learned'
 
     def set_hyperparameters(self, vocab_size, seq_length, batch_size):
         self.vocab_size = vocab_size

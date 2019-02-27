@@ -4,7 +4,7 @@ from tfutils import jagged_softmax
 
 
 class AttentionCell(tf.nn.rnn_cell.RNNCell):
-    def __init__(self, cell, attn_length, size, num_attns, lambda_type, min_tensor):
+    def __init__(self, cell, attn_length, size, num_attns, lambda_type, min_tensor, output_mixing):
         if not isinstance(cell, tf.nn.rnn_cell.RNNCell):
             raise TypeError('The parameter cell is not an RNNCell.')
         if attn_length <= 0:
@@ -18,6 +18,7 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
         self._num_attns = num_attns
         self.lambda_type = lambda_type
         self.min_tensor = min_tensor
+        self.output_mixing = output_mixing
 
         print("Constructing Attention Cell")
 
@@ -103,7 +104,16 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
                    tf.transpose(tf.stack(attn_ids), [1, 0, 2]), lmda, states
         
     def _weighted_output(self, lm_output, attn_outputs, lmda):
-        return lm_output
+        if not self.output_mixing:
+            return lm_output
+        elif self.output_mixing == 'halfhalf':
+            return lm_output*.5 + attn_outputs[0]*.5
+        elif self.output_mixing == 'learned':
+            outputs = [lm_output]
+            outputs.extend(attn_outputs)
+            return tf.tanh(tf.contrib.layers.linear(tf.concat(axis=1, values=outputs), self._size))
+        else:
+            raise ValueError('config.output_mixing has to be set approprietly.')
 
     def _state(self, lm_output, state):
         return tf.contrib.layers.linear(tf.concat(axis=1, values=state[-1]), self._size)
@@ -194,8 +204,8 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
 
 
 class AttentionOverOutputCell(AttentionCell):
-    def __init__(self, cell, attn_length, size, num_attns, lambda_type, min_tensor):
-        super(AttentionOverOutputCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor)
+    def __init__(self, cell, attn_length, size, num_attns, lambda_type, min_tensor, output_mixing):
+        super(AttentionOverOutputCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor, output_mixing)
         print("Constructing Attention over Output Cell")
 
     def _state(self, lm_output, state):
@@ -216,7 +226,7 @@ class AttentionOverOutputCell(AttentionCell):
 
 class AttentionKeyValueCell(AttentionCell):
     def __init__(self, cell, attn_length, size, num_attns, lambda_type, min_tensor):
-        super(AttentionKeyValueCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor)
+        super(AttentionKeyValueCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor, None)
         print("Constructing Attention Key Value Cell")
 
     @property
@@ -260,7 +270,7 @@ class AttentionKeyValueCell(AttentionCell):
 
 class AttentionWithoutLambdaCell(AttentionKeyValueCell):
     def __init__(self, cell, attn_length, size, num_attns, lambda_type, min_tensor):
-        super(AttentionWithoutLambdaCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor)
+        super(AttentionWithoutLambdaCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor, None)
         print("Constructing Attention without Lambda cell")
 
     def _lambda(self, state, att_outputs, lm_input, num_tasks=None):
@@ -278,7 +288,7 @@ class AttentionWithoutLambdaCell(AttentionKeyValueCell):
 
 class AttentionBaselineCell(AttentionCell):
     def __init__(self, cell, attn_length, size, num_attns, lambda_type, min_tensor):
-        super(AttentionBaselineCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor)
+        super(AttentionBaselineCell, self).__init__(cell, attn_length, size, num_attns, lambda_type, min_tensor, None)
         print("Constructing Attention Baseline Cell")
 
     def _attn_input(self, lm_input, lm_output, final_output):
