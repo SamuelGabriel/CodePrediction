@@ -10,6 +10,7 @@ import os
 from tqdm import tqdm
 from multiprocessing import Pool
 from collections import deque, defaultdict
+import json
 # deterministic naming
 
 random.seed(2019)
@@ -217,15 +218,17 @@ def normalize(G: nx.DiGraph, change_name: Callable):
         given_names.add(proposed_name)
         for i in group:
             change_name(i, proposed_name)
+    return {k: len(l) for k,l in left_ids.items()}
 
 def load_edit_save(in_n_out):
     in_file, out_file = in_n_out
     G, g, change_name, change_type = read_graph(in_file)
     try:
-        normalize(G, change_name)
+        number_left = normalize(G, change_name)
     except Exception as v:
         raise ValueError(str(v) + ' with files: ' + str(in_n_out))
     write_graph(out_file, g)
+    return number_left
 
 def run_edit(source_dir, target_dir):
     in_files = glob(source_dir+'/**/*.proto', recursive=True)
@@ -236,8 +239,12 @@ def run_edit(source_dir, target_dir):
         os.makedirs(dirname(out_file), exist_ok=True)
         out_files.append(out_file)
     pool = Pool(4)
-    for _ in tqdm(pool.imap_unordered(load_edit_save, zip(in_files, out_files)), total=len(in_files)):
-        pass
+    min_number_left = {}
+    for num_left in tqdm(pool.imap_unordered(load_edit_save, zip(in_files, out_files)), total=len(in_files)):
+        for k, n in num_left.items():
+            if k not in min_number_left or n < min_number_left[k]:
+                min_number_left[k] = n
+    return min_number_left
 
 def print_as_text(G):
     tokens = [i for i in G.nodes if G.nodes[i]['data'].type in {FeatureNode.IDENTIFIER_TOKEN, FeatureNode.TOKEN}]
@@ -250,4 +257,7 @@ def print_as_text(G):
 if __name__ == '__main__':
     target_dir = args.target_path
     source_dir = args.source_path
-    run_edit(source_dir, target_dir)
+    min_number_left = run_edit(source_dir, target_dir)
+    print(min_number_left)
+    with open('minnumleft.json', 'w') as f:
+        json.dump(min_number_left, f)
