@@ -253,7 +253,7 @@ class AttentionModel(BasicModel):
         if self._copy_forcing:
             def prune_logits(logits):
                 q = tf.tile(tf.expand_dims(labels, -1), [1, self._max_attention])
-                copyable = tf.squeeze(tf.reduce_any(tf.equal(tf.cast(attn_ids, tf.int64), q), -1), axis=[0])
+                copyable = tf.squeeze(tf.reduce_any(tf.equal(tf.cast(attn_ids, tf.int64), q), -1), axis=[0], name="copyable")
                 zeros = tf.zeros_like(logits)
                 return tf.where(copyable, logits, zeros)
             logits = tf.cond(self.dropout_keep_rate < 1.0, lambda: prune_logits(logits), lambda: logits)
