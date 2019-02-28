@@ -11,6 +11,7 @@ from tqdm import tqdm
 from multiprocessing import Pool
 from collections import deque, defaultdict
 import json
+from itertools import repeat
 # deterministic naming
 
 random.seed(2019)
@@ -20,6 +21,7 @@ parser.add_argument("--source-path")
 parser.add_argument("--target-path")
 parser.add_argument("--types-in-names", action='store_true')
 parser.add_argument("--max-postfix", default=3000)
+parser.add_argument("--left-ids-path", default=None)
 args = parser.parse_args()
 
 MAX_POSTFIX = args.max_postfix
@@ -205,10 +207,13 @@ def find_id_groups(G: nx.DiGraph) -> Generator:
         if t:
             yield c, t
 
-def normalize(G: nx.DiGraph, change_name: Callable):
+def normalize(G: nx.DiGraph, change_name: Callable, fed_left_ids: dict):
     groups = find_id_groups(G)
     given_names = set() # type: Set[str]
-    left_ids = defaultdict(lambda: list(range(1, MAX_POSTFIX + 1))) # type: Dict[str, List[int]]
+    if fed_left_ids:
+        left_ids = {k: list(range(1, MAX_POSTFIX + 1 - n_left_ids)) for k, n_left_ids in fed_left_ids.items()} # type: Dict[str, List[int]]
+    else:
+        left_ids = defaultdict(lambda: list(range(1, MAX_POSTFIX + 1))) # type: Dict[str, List[int]]
     for group, type_name in groups:
         if len(left_ids[type_name]) == 0:
             raise ValueError('To small number range for current file')
@@ -221,10 +226,10 @@ def normalize(G: nx.DiGraph, change_name: Callable):
     return {k: len(l) for k,l in left_ids.items()}
 
 def load_edit_save(in_n_out):
-    in_file, out_file = in_n_out
+    in_file, out_file, left_ids = in_n_out
     G, g, change_name, change_type = read_graph(in_file)
     try:
-        number_left = normalize(G, change_name)
+        number_left = normalize(G, change_name, left_ids)
     except Exception as v:
         raise ValueError(str(v) + ' with files: ' + str(in_n_out))
     write_graph(out_file, g)
@@ -240,7 +245,14 @@ def run_edit(source_dir, target_dir):
         out_files.append(out_file)
     pool = Pool(4)
     min_number_left = {}
-    for num_left in tqdm(pool.imap_unordered(load_edit_save, zip(in_files, out_files)), total=len(in_files)):
+
+    if args.left_ids_path:
+        with open(args.left_ids_path, 'r') as f:
+            left_ids = json.load(f)
+    else:
+        left_ids = None
+
+    for num_left in tqdm(pool.imap_unordered(load_edit_save, zip(in_files, out_files, repeat(left_ids))), total=len(in_files)):
         for k, n in num_left.items():
             if k not in min_number_left or n < min_number_left[k]:
                 min_number_left[k] = n
