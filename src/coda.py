@@ -17,7 +17,7 @@ corpus_name = 'typedcorpus' if args.typed_dataset else 'corpus'
 extra_requests = ['--request-cpus', '6', '--request-memory', '55g'] if args.max_out else []
 
 subprocess.run(['cl', 'work', 'sgm-rnn-tutorial'])
-cmd ="python3 language_model/train.py {} ".format(' '.join(
+cmd ="python3 -u language_model/train.py {} ".format(' '.join(
         ['--hypers-override', "\'"+args.hypers_override+"\'", '--models-override', "\'"+args.models_override+"\'"]
      )) \
      + f"trained_models/ {corpus_name}/train {corpus_name}/valid"
