@@ -53,11 +53,14 @@ Tasks:
 >
 > -- Original Proposal
 
-Working on:
 - trying all the last resorts to make a difference: attention over outputs, larger attention window, look into attention storage
-
-Next:
 - different way of propagating error: learn to - only - copy whenever possible
 
 ### Padding (Until Session 8)
-No proposal yet...
+> No proposal yet...
+
+
+Working on:
+- sharing the attention weights between the standard language model and the copy mechanism
+- forcing the gradients towards copying
+- reducing the size of the vocabulary for typed data set
