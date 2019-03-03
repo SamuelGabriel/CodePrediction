@@ -17,11 +17,12 @@ from itertools import repeat
 random.seed(2019)
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--source-path")
-parser.add_argument("--target-path")
-parser.add_argument("--types-in-names", action='store_true')
-parser.add_argument("--max-postfix", default=3000)
-parser.add_argument("--left-ids-path", default=None)
+parser.add_argument("--source-path", help='Specifies where the dataset is located that should be normalized.')
+parser.add_argument("--target-path", help='Specifies where to write the normalized dataset.')
+parser.add_argument("--types-in-names", action='store_true', help='Wether to have normalized identifier names of the form <Type of identifier>-<Java type of identifier><Rand number> for variables and parameters instead of the form <Type of identifier>-<Rand number>')
+parser.add_argument("--max-postfix", default=3000, help='The upper end of the range from which the postfixes of the normalized identifiers are drawn. Ignored if --left-ids-path is specified.')
+parser.add_argument("--left-ids-path", default=None, help='If specified the max-postfix is not used to define the range from which the normalized identifiers postfix is drawn, but based on the file specified in --left-ids-path the postfix range is chosen as small as possible, but can be padded with --additional-padding.')
+parser.add_argument("--additional-padding", default=0, type=int, help='To use only if --left-ids-path specified, to define a padding on top of the tightest possible namespace generated from the file specified in --left-ids-path.')
 args = parser.parse_args()
 
 MAX_POSTFIX = args.max_postfix
@@ -211,9 +212,9 @@ def normalize(G: nx.DiGraph, change_name: Callable, fed_left_ids: dict):
     groups = find_id_groups(G)
     given_names = set() # type: Set[str]
     if fed_left_ids:
-        left_ids = {k: list(range(1, MAX_POSTFIX + 1 - n_left_ids)) for k, n_left_ids in fed_left_ids.items()} # type: Dict[str, List[int]]
+        left_ids = {k: list(range(1, MAX_POSTFIX + 1 - n_left_ids + args.additional_padding)) for k, n_left_ids in fed_left_ids.items()} # type: Dict[str, List[int]]
     else:
-        left_ids = defaultdict(lambda: list(range(1, MAX_POSTFIX + 1))) # type: Dict[str, List[int]]
+        left_ids = defaultdict(lambda: list(range(1, MAX_POSTFIX + 1)))
     for group, type_name in groups:
         if len(left_ids[type_name]) == 0:
             raise ValueError('To small number range for current file')
