@@ -9,10 +9,10 @@ parser.add_argument('--name')
 parser.add_argument('--hypers-override', dest='hypers_override', default='{}')
 parser.add_argument('--models-override', dest='models_override', default='{}')
 parser.add_argument('--max-out', action='store_true')
-parser.add_argument('--typed-dataset', action='store_true')
+parser.add_argument('--dataset', default='corpus')
 args = parser.parse_args()
 
-corpus_name = 'typedcorpus' if args.typed_dataset else 'corpus'
+corpus_name = args.dataset # 'typedcorpus' if args.typed_dataset else 'corpus'
 
 extra_requests = ['--request-cpus', '6', '--request-memory', '55g'] if args.max_out else []
 
