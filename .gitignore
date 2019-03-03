@@ -5,3 +5,7 @@ features-javac
 tf-venv
 **/.DS_Store
 originals
+output_files
+.ipynb*
+models
+*.png
