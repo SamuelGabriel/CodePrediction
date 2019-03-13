@@ -23,10 +23,12 @@ parser.add_argument("--types-in-names", action='store_true', help='Wether to hav
 parser.add_argument("--max-postfix", default=3000, help='The upper end of the range from which the postfixes of the normalized identifiers are drawn. Ignored if --left-ids-path is specified.')
 parser.add_argument("--left-ids-path", default=None, help='If specified the max-postfix is not used to define the range from which the normalized identifiers postfix is drawn, but based on the file specified in --left-ids-path the postfix range is chosen as small as possible, but can be padded with --additional-padding.')
 parser.add_argument("--additional-padding", default=0, type=int, help='To use only if --left-ids-path specified, to define a padding on top of the tightest possible namespace generated from the file specified in --left-ids-path.')
+parser.add_argument("--shared-id-tokens", action='store_true', help='If this option is activated --additional-padding, -- left-ids-path and --max-postfix are ignored and there is only one embedding for each IdType as defined in dataset_normalizer.IdTypes combined with each Java Type if --types-in-names, for each IdType otherwise.')
 args = parser.parse_args()
 
 MAX_POSTFIX = args.max_postfix
 TYPES_IN_NAMES = args.types_in_names
+SHARED_ID_TOKENS = args.shared_id_tokens
 
 class IdTypes(Enum):
     LocalVariable = 1
@@ -210,18 +212,21 @@ def find_id_groups(G: nx.DiGraph) -> Generator:
 
 def normalize(G: nx.DiGraph, change_name: Callable, fed_left_ids: dict):
     groups = find_id_groups(G)
-    given_names = set() # type: Set[str]
     if fed_left_ids:
         left_ids = {k: list(range(1, MAX_POSTFIX + 1 - n_left_ids + args.additional_padding)) for k, n_left_ids in fed_left_ids.items()} # type: Dict[str, List[int]]
+    elif SHARED_ID_TOKENS:
+        left_ids = {}
     else:
         left_ids = defaultdict(lambda: list(range(1, MAX_POSTFIX + 1)))
     for group, type_name in groups:
-        if len(left_ids[type_name]) == 0:
-            raise ValueError('To small number range for current file')
-        next_index = random.randint(0, len(left_ids[type_name])-1)
-        proposed_name = type_name+'{:02d}'.format(left_ids[type_name][next_index])
-        del left_ids[type_name][next_index]
-        given_names.add(proposed_name)
+        if SHARED_ID_TOKENS:
+            proposed_name = "<"+type_name+">"
+        else:
+            if len(left_ids[type_name]) == 0:
+                raise ValueError('To small number range for current file')
+            next_index = random.randint(0, len(left_ids[type_name])-1)
+            proposed_name = type_name+'{:02d}'.format(left_ids[type_name][next_index])
+            del left_ids[type_name][next_index]
         for i in group:
             change_name(i, proposed_name)
     return {k: len(l) for k,l in left_ids.items()}
