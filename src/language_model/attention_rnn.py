@@ -154,19 +154,7 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
 
     def _attention_states(self, attn_input, attn_ids, attn_count, lm_input, mask, raw_inputs):
         """This function updates the state the attention works with. That means updating the past token representations and ids. With the new representation of the current word: `lm_input` and ids `raw_inputs`. 
-
-        Arguments:
-            attn_input {[type]} -- [description]
-            attn_ids {[type]} -- [description]
-            attn_count {[type]} -- [description]
-            lm_input {[type]} -- [description]
-            mask {[type]} -- [description]
-            raw_inputs {[type]} -- [description]
-        
-        Returns:
-            [type] -- [description]
         """
-        # it seems like `attn_input` and `attn_ids` is all zero
         new_attn_input = tf.concat(values=[
             tf.slice(attn_input, [0, 1, 0], [-1, -1, -1]),
             tf.expand_dims(lm_input, 1)
@@ -176,8 +164,7 @@ class AttentionCell(tf.nn.rnn_cell.RNNCell):
             tf.slice(attn_ids, [0, 1], [-1, -1]),
             tf.expand_dims(raw_inputs, 1)
         ], axis=1)
-
-        # What is this? Doesn't this mean we replicate parts of the history?
+        # These where selects go over the different attentions and only if a new value came in that should not be masekd it will be added to the memory.
         new_attn_input = tf.where(mask, new_attn_input, attn_input)
         new_attn_ids = tf.where(mask, new_attn_ids, attn_ids)
         new_attn_count = tf.where(mask, tf.minimum(attn_count + 1, self._attn_length), attn_count)
@@ -300,8 +287,10 @@ class AttentionBaselineCell(AttentionCell):
     def _lambda(self, state, att_outputs, lm_input, num_tasks=None):
         num_tasks = num_tasks or self._num_tasks
         with tf.variable_scope("Lambda"):
-            return tf.ones([tf.shape(state)[0], num_tasks])
-            # return tf.concat(values=[tf.ones([tf.shape(state)[0], 1]), tf.zeros([tf.shape(state)[0], num_tasks-1])], axis=1) # why not this?
+            # their implementation:
+            # return tf.ones([tf.shape(state)[0], num_tasks])
+            # my bug fix: (otherwise the log loss blows up, can also be seen in their paper)
+            return tf.concat(values=[tf.ones([tf.shape(state)[0], 1]), tf.zeros([tf.shape(state)[0], num_tasks-1])], axis=1)
 
     def _weighted_output(self, lm_output, attn_outputs, weights):
         outputs = [lm_output]

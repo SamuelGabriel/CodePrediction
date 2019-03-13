@@ -137,7 +137,6 @@ class BasicModel(ModelBase):
         loss = tf.nn.sampled_softmax_loss(weights=tf.transpose(softmax_w), biases=softmax_b,labels=labels, inputs=output, num_sampled=self.config.num_samples, num_classes=self.vocab_size) \
             if self.config.num_samples > 0 else \
             tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=tf.reshape(self.targets, [-1]))
-            #isn't logits here the right thing!? But in source it is self._logits
 
         return logits, predict, loss, state
 
@@ -252,8 +251,11 @@ class AttentionModel(BasicModel):
         # Why can't this just be computed using `predict`? Shouldn't it be enough to compute xent on that?
         if self._copy_forcing:
             def prune_logits(logits):
+                # This query returns True almost everywhere, since both labels and attn_ids are mostly
                 q = tf.tile(tf.expand_dims(labels, -1), [1, self._max_attention])
-                copyable = tf.squeeze(tf.reduce_any(tf.equal(tf.cast(attn_ids, tf.int64), q), -1), axis=[0], name="copyable")
+                neg_ones = -tf.ones_like(attn_ids)
+                non_zero_attn_ids = tf.cast(tf.where(attn_ids == 0., neg_ones, attn_ids), tf.int64)
+                copyable = tf.squeeze(tf.reduce_any(tf.equal(non_zero_attn_ids, q), -1), axis=[0], name="copyable")
                 zeros = tf.zeros_like(logits)
                 return tf.where(copyable, logits, zeros)
             logits = tf.cond(self.dropout_keep_rate < 1.0, lambda: prune_logits(logits), lambda: logits)
@@ -270,9 +272,7 @@ class AttentionModel(BasicModel):
         cross_entropies = tf.stack([lm_cross_entropy] + attn_cross_entropies) * task_weights
         cross_entropy = tf.reduce_sum(cross_entropies, [0])
 
-        # Try to make gradient much simpler using newer built-in gradients in tensorflow
-        # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=predict, labels=labels)
-        
+        self.lmbda = lmbda # only to make lmbda accessible from outside for analysis
 
         return logits, predict, cross_entropy, state
 

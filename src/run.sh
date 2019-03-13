@@ -1,1 +1,1 @@
-python3 -u language_model/train.py "$@" --max-num-files 30 trained_models/ ../corpus/type_normalized_split/train/r252-corpus-features/org/elasticsearch/xpack ../corpus/type_normalized_split/train/r252-corpus-features/org/elasticsearch/search 
+python3 -u language_model/train.py "$@" trained_models/ ../corpus/not_so_tight_typed_split/train ../corpus/corpus/1000_pad_tight_typed_split/valid

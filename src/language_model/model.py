@@ -4,7 +4,7 @@ import pickle
 import time
 from glob import glob
 from collections import defaultdict, OrderedDict, Counter, deque
-from typing import List, Dict, Any, Iterable, Tuple, Optional, Union, NamedTuple
+from typing import List, Dict, Any, Iterable, Tuple, Optional, Union, NamedTuple, Callable
 from itertools import islice
 
 import numpy as np
@@ -161,7 +161,7 @@ class Model(object):
         Note: This has to create self.ops['loss'] (a scalar).
         """
         tokens = tf.transpose(self.placeholders['tokens'])
-        masks = tf.transpose(self.placeholders['masks'])
+        id_masks = tf.transpose(self.placeholders['masks'])
         tokens_lengths = self.placeholders['tokens_lengths']
         dropout_keep_rate = self.placeholders['dropout_keep_rate']
 
@@ -170,7 +170,7 @@ class Model(object):
         
         if m_params.attention:
             if m_params.masked_copying:
-                masks = tf.stack([masks[:-1,:]]*len(m_params.attention), axis=2)
+                masks = tf.stack([id_masks[:-1,:]]*len(m_params.attention), axis=2)
             else:
                 masks = tf.ones([self.hyperparameters['max_len']-1, self.hyperparameters['batch_size'], len(m_params.attention)])
         else:
@@ -179,14 +179,21 @@ class Model(object):
         with tf.variable_scope("m", initializer=tf.initializers.random_uniform(minval=-.05, maxval=.05)):
             model = utils.create_model(True, m_params, tokens[1:,:], tokens[:-1,:], tokens_lengths, dropout_keep_rate, masks=masks)
 
-        mask = tf.transpose(tf.sequence_mask(self.placeholders['tokens_lengths'], self.hyperparameters['max_len'], dtype=tf.int64))
-
+        mask = tf.transpose(tf.sequence_mask(self.placeholders['tokens_lengths'], self.hyperparameters['max_len']))
+        vocab = self.metadata['token_vocab']
+        not_unk = ~tf.equal(tokens, vocab.token_to_id[vocab.get_unk()])
+        mask = mask & not_unk # don't account for unk as correct
+        flat_predictions = tf.argmax(model.predict, -1)
+        predictions = tf.reshape(flat_predictions, [m_params.seq_length, m_params.batch_size])
+        self.ops['predictions'] = predictions
+        pred_prob = tf.gather_nd(model.predict,
+                                 tf.stack([tf.range(m_params.seq_length * m_params.batch_size, dtype=tf.int64),flat_predictions], axis=1))
+        self.ops['probs'] = tf.reshape(pred_prob, [m_params.seq_length, m_params.batch_size])
         self.ops['loss'] = model.cost
-        predictions = tf.reshape(tf.argmax(model.predict, -1), [m_params.seq_length, m_params.batch_size])
-        self.ops['num_correct_tokens'] = tf.reduce_sum(tf.cast(tf.equal(predictions, tokens[1:,:]), tf.int64) * mask[1:, :])
+        self.ops['num_correct_tokens'] = tf.reduce_sum(tf.boolean_mask(tf.cast(tf.equal(predictions, tokens[1:,:]), tf.int64),mask[1:, :]))
+        self.ops['num_correct_ids'] = tf.reduce_sum(tf.boolean_mask(tf.cast(tf.equal(predictions, tokens[1:,:]), tf.int64),id_masks[1:, :] & mask[1:, :]))
         self.ops['last_state'] = model.final_state
         self.__model = model
-        self.placeholders['initial_state'] = model.initial_state
 
     def __make_training_step(self) -> None:
         """
@@ -251,6 +258,7 @@ class Model(object):
         """
         data_files = get_data_files_from_directory(data_dir, max_num_files)
         tokens = Counter(t for f in data_files for t, _ in self.load_data_file(f))
+        print('Number of unique tokens in dataset: ', len(tokens.keys()))
                 
         self.__metadata = {'token_vocab': Vocabulary.create_vocabulary(tokens, max_size=5000)}
     
@@ -376,7 +384,7 @@ class Model(object):
 
             yield len(tokens_lengths), feed_dicts
 
-    def __run_epoch_in_batches(self, data: LoadedSamples, epoch_name: str, is_train: bool, epoch_number: int =0) -> Tuple[float, float]:
+    def __run_epoch_in_batches(self, data: LoadedSamples, epoch_name: str, is_train: bool, epoch_number: int =0, analysis_fun: Optional[Callable]=None) -> Union[Tuple[float, float], Tuple[float, float, Any]]:
         """
         Args:
             data: The loaded data to run the model on.
@@ -390,6 +398,7 @@ class Model(object):
         num_samples_so_far, num_total_samples = 0, len(data['tokens'])
         data_generator = self.__split_data_into_sequenced_minibatches(data, epoch_number, is_train=is_train)
         epoch_start = time.time()
+        analysis_returns = []
         for minibatch_counter, (samples_in_batch, batch_data_dicts) in enumerate(data_generator):
             if self.hyperparameters['mini_updates']:
                 print("%s: Batch %5i. Processed %i/%i samples. Loss so far: %.4f.  Acc. so far: %.2f%%  "
@@ -404,6 +413,12 @@ class Model(object):
                 ops_to_run['train_step'] = self.__ops['train_step']
             if 'num_correct_tokens' in self.__ops:
                 ops_to_run['num_correct_tokens'] = self.__ops['num_correct_tokens']
+            if analysis_fun:
+                ops_to_run['predictions'] = self.__ops['predictions']
+                ops_to_run['probs'] = self.__ops['probs']
+                ops_to_run['num_correct_ids'] = self.__ops['num_correct_ids']
+                if self.__model.is_attention_model:
+                    ops_to_run['lambdas'] = self.__model.lmbda
             ops_to_run['last_state'] = self.__ops['last_state']
             ops_to_run['last_state'] = utils.get_evals_for_state(self.__model)
             state, att_states, att_ids, att_counts = utils.get_initial_state(self.__model)
@@ -414,15 +429,24 @@ class Model(object):
                 assert not np.isnan(op_results['loss'])
                 epoch_loss += op_results['loss']
                 last_state = op_results['last_state']
-                state, att_states, att_ids, alpha_states, att_counts, lambda_state \
-                    = utils.extract_results(last_state, self.__model)
+                imm_state = utils.extract_results(last_state, self.__model)
+                if analysis_fun is not None:
+                    r = analysis_fun(imm_state, batch_data_dict[self.placeholders['tokens']], 
+                        batch_data_dict[self.placeholders['tokens_lengths']], op_results['predictions'], op_results['probs'], self.metadata['token_vocab'], minibatch_counter,
+                        lambdas=(op_results['lambdas'] if 'lambdas' in op_results else None), 
+                        num_correct_ids=op_results['num_correct_ids'], num_ids=np.nansum(batch_data_dict[self.placeholders['masks']]))
+                    analysis_returns.append(r)
+                state, att_states, att_ids, alpha_states, att_counts, lambda_state = imm_state
                 if 'num_correct_tokens' in self.__ops:
                     epoch_total_tokens += np.sum(batch_data_dict[self.placeholders['tokens_lengths']])
                     epoch_correct_predictions += op_results['num_correct_tokens']
         used_time = time.time() - epoch_start
         print("\r\x1b[K  Epoch %s took %.2fs [processed %s samples/second]"
               % (epoch_name, used_time, int(num_samples_so_far/used_time)))
-        return epoch_loss / num_samples_so_far, epoch_correct_predictions / max(epoch_total_tokens, 1) * 100
+        returns = (epoch_loss / num_samples_so_far, epoch_correct_predictions / max(epoch_total_tokens, 1) * 100)
+        if analysis_returns:
+            return returns + (analysis_returns,)
+        return returns
 
     def train(self, train_data: LoadedSamples, valid_data: LoadedSamples) -> str:
         """
@@ -468,7 +492,7 @@ class Model(object):
 
         return model_path
 
-    def test(self, test_data: LoadedSamples):
+    def test(self, test_data: LoadedSamples, analysis_fun=None):
         """
         Simple test routine returning per-token accuracy, conditional on correct prediction
         of the sequence so far.
@@ -476,5 +500,8 @@ class Model(object):
         Args:
             test_data: Tensorised data to test on.
         """
-        _, test_acc = self.__run_epoch_in_batches(test_data, "Test", is_train=False)
-        print('Test accuracy: %.2f%%' % test_acc)
+        with self.__sess.as_default():
+            r = self.__run_epoch_in_batches(test_data, "Test", is_train=False, analysis_fun=analysis_fun)
+            print('Test accuracy: {}, Test loss: {}'.format(r[1], r[0]))
+            if len(r) > 2:
+                return r[2]
