@@ -7,7 +7,7 @@ Options:
     -h --help                        Show this screen.
     --max-num-files INT              Number of files to load.
     --debug                          Enable debug routines. [default: False]
-    --run-analysis                   Enable running analysis to retrieve example inferences and more statistics. [default: False]
+    --run-analysis                   Enable running analysis to retrieve example inferences and more statistics. This will print a lot of things especially example predictions for one file in each batch and statistics for each batch, as well as global counts in the end. [default: False]
 """
 import gzip
 import json
@@ -67,14 +67,8 @@ def large_lambda_1(s: tuple, tokens: np.ndarray, token_lens: np.ndarray, predict
         attention_stats = [average_lambda]
     else:
         attention_stats = []
-    #print_tokens_and_others((tokens, predictions), (probs,), vocab)
+    print_tokens_and_others((tokens, predictions), (probs,), vocab)
     print('id acc: ', num_correct_ids/num_ids)
-
-    """
-    if np.any(max_copy_prob > 2e-07):
-        i = max_copy_prob.nonzero()
-        print(alpha_states[i][0], tokens[i][0], [vocab.get_name_for_id(int(t)) for t in [tokens[i][0]]])
-    """
     am =  np.unravel_index(np.argmin(predictions), predictions.shape)
     print(predictions[am], tokens[am[0]], tokens[am])
     return [np.min(predictions), np.mean(predictions),n_unk,n_non_pad, num_correct_ids, num_ids]+attention_stats
