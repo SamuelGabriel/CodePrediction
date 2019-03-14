@@ -1,3 +1,5 @@
+# Based on the code (https://github.com/uclmr/pycodesuggest) for Bhoopchand et al. 2016 (http://arxiv.org/abs/1611.08307)
+
 from __future__ import absolute_import
 from __future__ import print_function
 from __future__ import division

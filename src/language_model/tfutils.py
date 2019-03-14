@@ -1,3 +1,4 @@
+# Based on the code (https://github.com/uclmr/pycodesuggest) for Bhoopchand et al. 2016 (http://arxiv.org/abs/1611.08307)
 import collections
 import six
 import tensorflow as tf
