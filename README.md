@@ -14,6 +14,6 @@ As base dataset we use the r252-corpus-features directory provided in class. Thi
 ## Running the Language Model
 You can run the `src/language_mode` code by using the container provided in `src/container`, that is available on Docker Hub as `samgmuller/tf1.12base:0.4`. If you do not want to use the container you can also install the `src/container/requirements.txt` as well as TensorFlow 1.12. I recommend using a virtual environment to install TensorFlow.
 ### Training
-You can run the training as described by `python3 src/language_model/train.py --help`. The easiest usage would be something like: `python3 src/language_model_train.py SAVE_MODEL_DIR DIR_WITH_TRAIN_DATA DIR_WITH_VALID_DATA`. The training and validation data is assumed to be in the proto format defined by you. 
+You can run the training as described by `python3 src/language_model/train.py --help`. The easiest usage would be something like: `python3 src/language_model_train.py SAVE_MODEL_DIR DIR_WITH_TRAIN_DATA DIR_WITH_VALID_DATA`. The training and validation data is assumed to be in the proto format defined in `graph.proto`. 
 ### Evaluation
 The evaluation can be run with `python3 src/language_model/evaluate.py`, which has a `--help` command for usage information.

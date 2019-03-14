@@ -124,7 +124,6 @@ def tile_vector(vector, number):
 
 
 def sparse_transpose(sp_input):
-    # TODO CHECK AGAIN
     transposed_indices = tf.reverse(tf.cast(sp_input.indices, tf.int64), [False, True])
     transposed_values = sp_input.values
     transposed_shape = tf.reverse(tf.cast(sp_input.shape, tf.int64), [True])

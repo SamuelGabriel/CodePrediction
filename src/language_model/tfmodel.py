@@ -151,7 +151,7 @@ class AttentionModel(BasicModel):
     def __init__(self, is_training, config, targets, input_data, lengths, dropout_keep_rate, masks=None, initial_state=None):
         self._num_attns = len(config.attention)
         self._num_tasks = len(config.attention) + 1
-        self._masks = masks #tf.placeholder(tf.bool,[config.seq_length, config.batch_size, len(config.attention)], name="masks")
+        self._masks = masks 
         self._copy_forcing = config.copy_forcing
         self._output_mixing = config.output_mixing
         self._max_attention = config.max_attention

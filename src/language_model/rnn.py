@@ -1,11 +1,8 @@
 # Based on the code (https://github.com/uclmr/pycodesuggest) for Bhoopchand et al. 2016 (http://arxiv.org/abs/1611.08307)
+# This code was adapted from the tensorflow source
 import tensorflow as tf
 
 import tfutils
-
-'''
-Note: This code was adapted from the Tensorflow source
-'''
 
 
 def dynamic_attention_rnn(cell, inputs, attn_length, num_tasks, batch_size,
