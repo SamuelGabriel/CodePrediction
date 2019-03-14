@@ -19,5 +19,5 @@ You can run the `src/language_mode` code in the container provided in `src/conta
 You can run the training as described by `python3 src/language_model/train.py --help`. The easiest usage would be something like: `python3 src/language_model_train.py SAVE_MODEL_DIR DIR_WITH_TRAIN_DATA DIR_WITH_VALID_DATA`. The training and validation data is assumed to be in the proto format defined in `graph.proto`. 
 ### Evaluation
 The evaluation can be run with `python3 src/language_model/evaluate.py`, which has a `--help` command for usage information.
-
+### Plotting
 To plot the results you might consider using the notebook `src/learning_curve_plotting.ipynb` that has some nice plots of the results and the learning curves found in `output_files`.
