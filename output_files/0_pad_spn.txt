@@ -1,0 +1,453 @@
+3.5.2 (default, Nov 23 2017, 16:37:01) 
+[GCC 5.4.0 20160609]
+Extra params:  {"optimizer": "sgd", "learning_rate_decay": 0.9, "learning_rate": 0.7, "max_len": 100} {"attention": [1], "attention_variant": "output", "max_attention": 30}
+{'patience': 5, 'run_id': 'RNNModel-2019-02-28-17-53-11', 'gradient_clip': 5, 'mini_updates': False, 'batch_size': 30, 'momentum': 0.85, 'max_len': 100, 'learning_rate_decay': 0.9, 'dropout_keep_rate': 0.9, 'max_epochs': 300, 'learning_rate': 0.7, 'optimizer': 'sgd'}
+{'num_layers': 1, 'attention': [1], 'max_attention': 30, 'output_mixing': None, 'masked_copying': True, 'num_samples': 0, 'copy_forcing': False, 'lambda_type': ['state', 'att', 'input'], 'max_grad_norm': 5, 'hidden_size': 200, 'attention_variant': 'output'}
+Loaded metadata for model: 
+           token_vocab: {'': 215, 'accept': 539, 'mappings': 2449, 'parameter-string
+Training on 8564 samples.
+Validating on 136 samples.
+Constructing Attention Cell
+Constructing Attention over Output Cell
+Constructing Basic Model
+Constructing Attention Model
+Constructing Attention over Output Model
+==== Epoch 0 ====
+
+[K  Epoch 0 (train) took 976.25s [processed 98 samples/second]
+ Training Loss: 6.140290, Accuracy: 61.48%
+
+[K  Epoch 0 (valid) took 9.15s [processed 117 samples/second]
+ Validation Loss: 3.483731, Accuracy: 62.58%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 1 ====
+
+[K  Epoch 1 (train) took 959.51s [processed 100 samples/second]
+ Training Loss: 4.364608, Accuracy: 69.43%
+
+[K  Epoch 1 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 3.118906, Accuracy: 65.25%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 2 ====
+
+[K  Epoch 2 (train) took 959.71s [processed 100 samples/second]
+ Training Loss: 3.992354, Accuracy: 71.13%
+
+[K  Epoch 2 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.981654, Accuracy: 66.22%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 3 ====
+
+[K  Epoch 3 (train) took 960.11s [processed 100 samples/second]
+ Training Loss: 3.800803, Accuracy: 72.06%
+
+[K  Epoch 3 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.881604, Accuracy: 67.17%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 4 ====
+
+[K  Epoch 4 (train) took 959.84s [processed 100 samples/second]
+ Training Loss: 3.676318, Accuracy: 72.69%
+
+[K  Epoch 4 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.815828, Accuracy: 67.80%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 5 ====
+
+[K  Epoch 5 (train) took 960.12s [processed 100 samples/second]
+ Training Loss: 3.585069, Accuracy: 73.17%
+
+[K  Epoch 5 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.776786, Accuracy: 68.22%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 6 ====
+
+[K  Epoch 6 (train) took 960.17s [processed 100 samples/second]
+ Training Loss: 3.514183, Accuracy: 73.55%
+
+[K  Epoch 6 (valid) took 4.82s [processed 224 samples/second]
+ Validation Loss: 2.752536, Accuracy: 68.53%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 7 ====
+
+[K  Epoch 7 (train) took 960.11s [processed 100 samples/second]
+ Training Loss: 3.455821, Accuracy: 73.87%
+
+[K  Epoch 7 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.719513, Accuracy: 68.55%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 8 ====
+
+[K  Epoch 8 (train) took 960.42s [processed 100 samples/second]
+ Training Loss: 3.407000, Accuracy: 74.14%
+
+[K  Epoch 8 (valid) took 4.82s [processed 224 samples/second]
+ Validation Loss: 2.698665, Accuracy: 69.06%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 9 ====
+
+[K  Epoch 9 (train) took 960.48s [processed 100 samples/second]
+ Training Loss: 3.366545, Accuracy: 74.36%
+
+[K  Epoch 9 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.674604, Accuracy: 69.26%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 10 ====
+
+[K  Epoch 10 (train) took 960.32s [processed 100 samples/second]
+ Training Loss: 3.330680, Accuracy: 74.57%
+
+[K  Epoch 10 (valid) took 4.82s [processed 224 samples/second]
+ Validation Loss: 2.655643, Accuracy: 69.44%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 11 ====
+
+[K  Epoch 11 (train) took 960.30s [processed 100 samples/second]
+ Training Loss: 3.300981, Accuracy: 74.74%
+
+[K  Epoch 11 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.652248, Accuracy: 69.51%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 12 ====
+
+[K  Epoch 12 (train) took 960.47s [processed 100 samples/second]
+ Training Loss: 3.273916, Accuracy: 74.90%
+
+[K  Epoch 12 (valid) took 4.82s [processed 224 samples/second]
+ Validation Loss: 2.647317, Accuracy: 69.42%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 13 ====
+
+[K  Epoch 13 (train) took 960.21s [processed 100 samples/second]
+ Training Loss: 3.250274, Accuracy: 75.04%
+
+[K  Epoch 13 (valid) took 4.80s [processed 225 samples/second]
+ Validation Loss: 2.631998, Accuracy: 69.64%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 14 ====
+
+[K  Epoch 14 (train) took 960.58s [processed 100 samples/second]
+ Training Loss: 3.230842, Accuracy: 75.16%
+
+[K  Epoch 14 (valid) took 4.78s [processed 225 samples/second]
+ Validation Loss: 2.619226, Accuracy: 69.90%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 15 ====
+
+[K  Epoch 15 (train) took 960.55s [processed 100 samples/second]
+ Training Loss: 3.211687, Accuracy: 75.26%
+
+[K  Epoch 15 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.608654, Accuracy: 70.09%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 16 ====
+
+[K  Epoch 16 (train) took 960.72s [processed 100 samples/second]
+ Training Loss: 3.196186, Accuracy: 75.38%
+
+[K  Epoch 16 (valid) took 4.76s [processed 227 samples/second]
+ Validation Loss: 2.604060, Accuracy: 70.20%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 17 ====
+
+[K  Epoch 17 (train) took 960.80s [processed 100 samples/second]
+ Training Loss: 3.182405, Accuracy: 75.44%
+
+[K  Epoch 17 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.599084, Accuracy: 70.19%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 18 ====
+
+[K  Epoch 18 (train) took 961.02s [processed 100 samples/second]
+ Training Loss: 3.168941, Accuracy: 75.53%
+
+[K  Epoch 18 (valid) took 5.13s [processed 210 samples/second]
+ Validation Loss: 2.591807, Accuracy: 70.29%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 19 ====
+
+[K  Epoch 19 (train) took 989.00s [processed 97 samples/second]
+ Training Loss: 3.158040, Accuracy: 75.60%
+
+[K  Epoch 19 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.586979, Accuracy: 70.30%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 20 ====
+
+[K  Epoch 20 (train) took 960.66s [processed 100 samples/second]
+ Training Loss: 3.147695, Accuracy: 75.65%
+
+[K  Epoch 20 (valid) took 4.80s [processed 224 samples/second]
+ Validation Loss: 2.579074, Accuracy: 70.33%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 21 ====
+
+[K  Epoch 21 (train) took 960.30s [processed 100 samples/second]
+ Training Loss: 3.138352, Accuracy: 75.72%
+
+[K  Epoch 21 (valid) took 4.82s [processed 224 samples/second]
+ Validation Loss: 2.574341, Accuracy: 70.40%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 22 ====
+
+[K  Epoch 22 (train) took 960.52s [processed 100 samples/second]
+ Training Loss: 3.131517, Accuracy: 75.76%
+
+[K  Epoch 22 (valid) took 4.80s [processed 224 samples/second]
+ Validation Loss: 2.569264, Accuracy: 70.43%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 23 ====
+
+[K  Epoch 23 (train) took 960.51s [processed 100 samples/second]
+ Training Loss: 3.124163, Accuracy: 75.79%
+
+[K  Epoch 23 (valid) took 4.80s [processed 224 samples/second]
+ Validation Loss: 2.569971, Accuracy: 70.48%
+==== Epoch 24 ====
+
+[K  Epoch 24 (train) took 960.22s [processed 100 samples/second]
+ Training Loss: 3.118049, Accuracy: 75.83%
+
+[K  Epoch 24 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.563661, Accuracy: 70.54%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 25 ====
+
+[K  Epoch 25 (train) took 960.62s [processed 100 samples/second]
+ Training Loss: 3.112158, Accuracy: 75.88%
+
+[K  Epoch 25 (valid) took 4.80s [processed 225 samples/second]
+ Validation Loss: 2.558271, Accuracy: 70.52%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 26 ====
+
+[K  Epoch 26 (train) took 960.78s [processed 100 samples/second]
+ Training Loss: 3.108303, Accuracy: 75.90%
+
+[K  Epoch 26 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.552431, Accuracy: 70.57%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 27 ====
+
+[K  Epoch 27 (train) took 960.30s [processed 100 samples/second]
+ Training Loss: 3.103891, Accuracy: 75.92%
+
+[K  Epoch 27 (valid) took 4.83s [processed 223 samples/second]
+ Validation Loss: 2.545132, Accuracy: 70.69%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 28 ====
+
+[K  Epoch 28 (train) took 960.21s [processed 100 samples/second]
+ Training Loss: 3.100361, Accuracy: 75.94%
+
+[K  Epoch 28 (valid) took 4.83s [processed 223 samples/second]
+ Validation Loss: 2.545136, Accuracy: 70.69%
+==== Epoch 29 ====
+
+[K  Epoch 29 (train) took 960.64s [processed 100 samples/second]
+ Training Loss: 3.097239, Accuracy: 75.96%
+
+[K  Epoch 29 (valid) took 4.80s [processed 225 samples/second]
+ Validation Loss: 2.540527, Accuracy: 70.71%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 30 ====
+
+[K  Epoch 30 (train) took 960.53s [processed 100 samples/second]
+ Training Loss: 3.093636, Accuracy: 75.99%
+
+[K  Epoch 30 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.536893, Accuracy: 70.77%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 31 ====
+
+[K  Epoch 31 (train) took 960.88s [processed 100 samples/second]
+ Training Loss: 3.091375, Accuracy: 76.00%
+
+[K  Epoch 31 (valid) took 4.80s [processed 225 samples/second]
+ Validation Loss: 2.532976, Accuracy: 70.79%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 32 ====
+
+[K  Epoch 32 (train) took 960.78s [processed 100 samples/second]
+ Training Loss: 3.090254, Accuracy: 76.00%
+
+[K  Epoch 32 (valid) took 4.82s [processed 224 samples/second]
+ Validation Loss: 2.528784, Accuracy: 70.82%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 33 ====
+
+[K  Epoch 33 (train) took 960.63s [processed 100 samples/second]
+ Training Loss: 3.087366, Accuracy: 76.02%
+
+[K  Epoch 33 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.523088, Accuracy: 70.85%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 34 ====
+
+[K  Epoch 34 (train) took 960.56s [processed 100 samples/second]
+ Training Loss: 3.085752, Accuracy: 76.02%
+
+[K  Epoch 34 (valid) took 4.78s [processed 225 samples/second]
+ Validation Loss: 2.521234, Accuracy: 70.89%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 35 ====
+
+[K  Epoch 35 (train) took 960.33s [processed 100 samples/second]
+ Training Loss: 3.084900, Accuracy: 76.02%
+
+[K  Epoch 35 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.518460, Accuracy: 70.87%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 36 ====
+
+[K  Epoch 36 (train) took 960.27s [processed 100 samples/second]
+ Training Loss: 3.083482, Accuracy: 76.03%
+
+[K  Epoch 36 (valid) took 4.78s [processed 225 samples/second]
+ Validation Loss: 2.513754, Accuracy: 70.89%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 37 ====
+
+[K  Epoch 37 (train) took 960.25s [processed 100 samples/second]
+ Training Loss: 3.081785, Accuracy: 76.04%
+
+[K  Epoch 37 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.512258, Accuracy: 70.94%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 38 ====
+
+[K  Epoch 38 (train) took 960.24s [processed 100 samples/second]
+ Training Loss: 3.082188, Accuracy: 76.05%
+
+[K  Epoch 38 (valid) took 4.82s [processed 223 samples/second]
+ Validation Loss: 2.508909, Accuracy: 70.95%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 39 ====
+
+[K  Epoch 39 (train) took 960.72s [processed 100 samples/second]
+ Training Loss: 3.081048, Accuracy: 76.04%
+
+[K  Epoch 39 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.506771, Accuracy: 70.97%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 40 ====
+
+[K  Epoch 40 (train) took 960.02s [processed 100 samples/second]
+ Training Loss: 3.080559, Accuracy: 76.04%
+
+[K  Epoch 40 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.503619, Accuracy: 70.97%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 41 ====
+
+[K  Epoch 41 (train) took 960.37s [processed 100 samples/second]
+ Training Loss: 3.079959, Accuracy: 76.07%
+
+[K  Epoch 41 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.502409, Accuracy: 71.00%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 42 ====
+
+[K  Epoch 42 (train) took 960.38s [processed 100 samples/second]
+ Training Loss: 3.079583, Accuracy: 76.06%
+
+[K  Epoch 42 (valid) took 4.80s [processed 225 samples/second]
+ Validation Loss: 2.500254, Accuracy: 71.04%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 43 ====
+
+[K  Epoch 43 (train) took 960.36s [processed 100 samples/second]
+ Training Loss: 3.078863, Accuracy: 76.06%
+
+[K  Epoch 43 (valid) took 4.82s [processed 224 samples/second]
+ Validation Loss: 2.499211, Accuracy: 71.05%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 44 ====
+
+[K  Epoch 44 (train) took 960.18s [processed 100 samples/second]
+ Training Loss: 3.079181, Accuracy: 76.06%
+
+[K  Epoch 44 (valid) took 4.80s [processed 224 samples/second]
+ Validation Loss: 2.495306, Accuracy: 71.02%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 45 ====
+
+[K  Epoch 45 (train) took 960.14s [processed 100 samples/second]
+ Training Loss: 3.078713, Accuracy: 76.04%
+
+[K  Epoch 45 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.493473, Accuracy: 71.06%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 46 ====
+
+[K  Epoch 46 (train) took 959.91s [processed 100 samples/second]
+ Training Loss: 3.078079, Accuracy: 76.06%
+
+[K  Epoch 46 (valid) took 4.80s [processed 225 samples/second]
+ Validation Loss: 2.490755, Accuracy: 71.05%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 47 ====
+
+[K  Epoch 47 (train) took 960.19s [processed 100 samples/second]
+ Training Loss: 3.078148, Accuracy: 76.06%
+
+[K  Epoch 47 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.488528, Accuracy: 71.08%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 48 ====
+
+[K  Epoch 48 (train) took 1015.24s [processed 94 samples/second]
+ Training Loss: 3.078207, Accuracy: 76.06%
+
+[K  Epoch 48 (valid) took 5.17s [processed 208 samples/second]
+ Validation Loss: 2.486339, Accuracy: 71.06%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 49 ====
+
+[K  Epoch 49 (train) took 1076.47s [processed 89 samples/second]
+ Training Loss: 3.078127, Accuracy: 76.05%
+
+[K  Epoch 49 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.484858, Accuracy: 71.09%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 50 ====
+
+[K  Epoch 50 (train) took 1114.52s [processed 86 samples/second]
+ Training Loss: 3.077797, Accuracy: 76.06%
+
+[K  Epoch 50 (valid) took 5.22s [processed 206 samples/second]
+ Validation Loss: 2.483494, Accuracy: 71.11%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 51 ====
+
+[K  Epoch 51 (train) took 1080.96s [processed 89 samples/second]
+ Training Loss: 3.077742, Accuracy: 76.06%
+
+[K  Epoch 51 (valid) took 5.08s [processed 212 samples/second]
+ Validation Loss: 2.481012, Accuracy: 71.12%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 52 ====
+
+[K  Epoch 52 (train) took 985.41s [processed 97 samples/second]
+ Training Loss: 3.078410, Accuracy: 76.05%
+
+[K  Epoch 52 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.479053, Accuracy: 71.12%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 53 ====
+
+[K  Epoch 53 (train) took 959.44s [processed 100 samples/second]
+ Training Loss: 3.078496, Accuracy: 76.05%
+
+[K  Epoch 53 (valid) took 4.79s [processed 225 samples/second]
+ Validation Loss: 2.477853, Accuracy: 71.13%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 54 ====
+
+[K  Epoch 54 (train) took 960.17s [processed 100 samples/second]
+ Training Loss: 3.077404, Accuracy: 76.06%
+
+[K  Epoch 54 (valid) took 4.81s [processed 224 samples/second]
+ Validation Loss: 2.475765, Accuracy: 71.13%
+  Best result so far -- saving model as 'trained_models/RNNModel-2019-02-28-17-53-11_model_best.pkl.gz'.
+==== Epoch 55 ====
