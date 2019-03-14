@@ -9,3 +9,6 @@ output_files
 .ipynb*
 models
 *.png
+figures
+outputs.csv
+minimumleft.json

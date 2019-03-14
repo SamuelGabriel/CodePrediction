@@ -1,1 +1,0 @@
-python3 -u language_model/train.py "$@" trained_models/ ../corpus/not_so_tight_typed_split/train ../corpus/corpus/1000_pad_tight_typed_split/valid
