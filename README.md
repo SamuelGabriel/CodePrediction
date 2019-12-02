@@ -1,7 +1,9 @@
-# R252 Project (sgm48)
+# Code Prediction
 
 ## Summary
-The project's core is to reimplement 'Learning Python Code Suggestion with a Sparse Pointer Network' by [Bhoopchand et al.](https://arxiv.org/pdf/1611.08307.pdf). I additionally developed extensions. My work is described in `Write-Up.pdf`.
+This project is an extension to 'Learning Python Code Suggestion with a Sparse Pointer Network' by [Bhoopchand et al.](https://arxiv.org/pdf/1611.08307.pdf) to share an attention between the copy mechanism and the vocabulary predictions.
+Check out [Write-Up.pdf](Write-Up.pdf) for a detailed description of my work an experiments.
+
 ## Overview of the Repository
 The code can be found in `src`, which is based on the language model provided in class.
 It incorporates the model described by Bhoopchand et al. in `src/language_model`.
