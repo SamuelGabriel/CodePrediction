@@ -2,7 +2,7 @@
 
 ## Summary
 This project is an extension to 'Learning Python Code Suggestion with a Sparse Pointer Network' by [Bhoopchand et al.](https://arxiv.org/pdf/1611.08307.pdf) to share an attention between the copy mechanism and the vocabulary predictions.
-Check out [Write-Up.pdf](Write-Up.pdf) for a detailed description of my work an experiments.
+Check out [Write-Up.pdf](Write-Up.pdf) for a detailed description of my work and experiments.
 
 ## Overview of the Repository
 The code can be found in `src`, which is based on the language model provided in class.
